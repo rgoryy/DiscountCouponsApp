@@ -48,6 +48,8 @@ composeCompiler {
 
 dependencies {
 
+    implementation(libs.androidx.navigation.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
 

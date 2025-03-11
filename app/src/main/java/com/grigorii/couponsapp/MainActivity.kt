@@ -1,15 +1,85 @@
 package com.grigorii.couponsapp
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.grigorii.couponsapp.compose.CouponsTheme
+import com.grigorii.couponsapp.compose.screens.FavoritesScreen
+import com.grigorii.couponsapp.compose.screens.MainScreen
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
+        setContent {
+            CouponsTheme {
+                val navController = rememberNavController()
+
+                val navItemList = listOf(
+                    NavItem("Главаная", Icons.Default.Home),
+                    NavItem("Каталог", Icons.Default.Menu),
+                    NavItem("Избранное", Icons.Default.FavoriteBorder),
+                )
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        NavigationBar {
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentDestination = navBackStackEntry?.destination
+
+                            navItemList.forEach { screen ->
+                                NavigationBarItem(
+                                    selected = currentDestination?.hierarchy?.any { it.route == screen.label } == true,
+                                    onClick = {
+                                        navController.navigate(screen.label)
+                                    },
+                                    icon = {
+                                        Icon(imageVector = screen.icon, contentDescription = "Icon")
+                                    },
+                                    label = {
+                                        Text(text = screen.label)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                ) { innerPadding ->
+                    NavHost(
+                        navController,
+                        startDestination = "Главаная",
+                        Modifier.padding(innerPadding)
+                    ) {
+                        composable("Главаная") { MainScreen(Modifier.padding(innerPadding)) }
+                        composable("Каталог") { Text("Hello!") }
+                        composable("Избранное") { FavoritesScreen(Modifier.padding(innerPadding)) }
+                    }
+                }
+            }
+        }
     }
 }
