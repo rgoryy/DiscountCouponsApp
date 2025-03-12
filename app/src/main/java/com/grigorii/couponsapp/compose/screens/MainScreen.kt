@@ -183,7 +183,10 @@ private fun CouponsSection(tempItemss: List<CardItemContent>) {
         ) {
             items(tempItemss) { item ->
                 CardItem(
-                    modifier = Modifier.height(IntrinsicSize.Max),
+                    modifier = Modifier
+                        .height(IntrinsicSize.Max)
+                        .width(282.dp)
+                        .height(337.dp),
                     title = item.title,
                     painter = item.painter,
                     imageDescription = item.imageDescription,
@@ -241,9 +244,7 @@ fun CardItem(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFFBFE),
         ),
-        modifier = Modifier
-            .width(282.dp)
-            .height(337.dp)
+        modifier = modifier
     ) {
 
         Column() {
