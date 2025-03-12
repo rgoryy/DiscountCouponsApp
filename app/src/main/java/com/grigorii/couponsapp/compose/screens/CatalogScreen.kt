@@ -3,6 +3,7 @@ package com.grigorii.couponsapp.compose.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SearchBar
@@ -38,15 +42,23 @@ import com.grigorii.couponsapp.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(modifier: Modifier = Modifier) {
+
     var text by remember { mutableStateOf("") }
+
     var active by remember { mutableStateOf(false) }
 
+    Column(
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .background(color = Color.White)
+    ) {
 
-    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+        HeaderSection()
+
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, end = 16.dp),
+                .padding(top = 16.dp),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = text,
@@ -172,6 +184,29 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun HeaderSection() {
+    Row(
+        modifier = Modifier
+            .background(Color(0xFFFFFBFE))
+            .fillMaxWidth()
+            .padding(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            "Каталог",
+            style = TextStyle(
+                color = Color(0xFF1C1B1F),
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp
+            ),
+            modifier = Modifier
+                .padding(start = 4.dp, end = 4.dp, top = 8.dp, bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
 fun FilterButton(modifier: Modifier = Modifier) {
     OutlinedButton(
         onClick = { },
@@ -200,10 +235,10 @@ fun ContentScale(tempItemss: List<CardItemContent>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp, end = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(top = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        
+
         tempItemss.forEach { item ->
             CardItem(
                 modifier = Modifier.height(337.dp),
