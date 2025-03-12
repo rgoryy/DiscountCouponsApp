@@ -55,47 +55,6 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
 
         HeaderSection()
 
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = text,
-                    onQueryChange = {
-                        text = it
-                    },
-                    onSearch = {
-                        active = false
-                    },
-                    expanded = active,
-                    onExpandedChange = { active = it },
-                    enabled = true,
-                    placeholder = {
-                        Text("Искать...")
-                    },
-                    leadingIcon = null,
-                    trailingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "favorite",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    interactionSource = null,
-                )
-            },
-            expanded = active,
-            onExpandedChange = {
-                active = it
-            },
-            shape = SearchBarDefaults.inputFieldShape,
-            tonalElevation = SearchBarDefaults.TonalElevation,
-            shadowElevation = SearchBarDefaults.ShadowElevation,
-            windowInsets = SearchBarDefaults.windowInsets,
-            content = { }
-        )
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,6 +62,49 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
+
+            item {
+                SearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = text,
+                            onQueryChange = {
+                                text = it
+                            },
+                            onSearch = {
+                                active = false
+                            },
+                            expanded = active,
+                            onExpandedChange = { active = it },
+                            enabled = true,
+                            placeholder = {
+                                Text("Искать...")
+                            },
+                            leadingIcon = null,
+                            trailingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = "favorite",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            interactionSource = null,
+                        )
+                    },
+                    expanded = active,
+                    onExpandedChange = {
+                        active = it
+                    },
+                    shape = SearchBarDefaults.inputFieldShape,
+                    tonalElevation = SearchBarDefaults.TonalElevation,
+                    shadowElevation = SearchBarDefaults.ShadowElevation,
+                    windowInsets = SearchBarDefaults.windowInsets,
+                    content = { }
+                )
+            }
 
             item {
                 FilterButton(modifier = Modifier.padding(top = 32.dp))
