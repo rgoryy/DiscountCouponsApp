@@ -40,20 +40,43 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+
+val options = listOf("Шаг 1", "Шаг 2", "Шаг 3")
 
 @Composable
-fun GreetingsScreen(modifier: Modifier = Modifier) {
-    // StepOneScreen()
+fun GreetingsScreen(
+    modifier: Modifier = Modifier,
+    mainNavController: NavController,
+    stateToNavigate: String
+) {
 
-    // StepTwoScreen()
+    val navController = rememberNavController()
 
-    StepThreeScreen()
-
+    NavHost(navController = navController, startDestination = options.first()) {
+        options.forEach { step ->
+            composable(step) {
+                when (step) {
+                    options[0] -> StepOneScreen(navController = navController)
+                    options[1] -> StepTwoScreen(navController = navController)
+                    options[2] -> StepThreeScreen(
+                        navController = navController,
+                        mainNavController = mainNavController,
+                        stateToNavigate = stateToNavigate
+                    )
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StepOneScreen(modifier: Modifier = Modifier) {
+fun StepOneScreen(modifier: Modifier = Modifier, navController: NavController) {
     var searchText by rememberSaveable { mutableStateOf("") }
 
     var expanded by remember { mutableStateOf(true) }
@@ -176,7 +199,7 @@ fun StepOneScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
-                    onClick = { }
+                    onClick = { navController.navigate(options[1]) }
                 ) {
                     Text("Применить")
                 }
@@ -185,7 +208,9 @@ fun StepOneScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(
                         top = 42.dp,
                         bottom = 88.dp
-                    )
+                    ),
+                    navController = navController,
+                    selected = options[0]
                 )
             }
         }
@@ -194,7 +219,7 @@ fun StepOneScreen(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun StepTwoScreen(modifier: Modifier = Modifier) {
+fun StepTwoScreen(modifier: Modifier = Modifier, navController: NavController) {
     var name by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
@@ -250,7 +275,7 @@ fun StepTwoScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
-                    onClick = { }
+                    onClick = { navController.navigate(options[2]) }
                 ) {
                     Text("Применить")
                 }
@@ -259,7 +284,9 @@ fun StepTwoScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(
                         top = 42.dp,
                         bottom = 88.dp
-                    )
+                    ),
+                    navController = navController,
+                    selected = options[1]
                 )
             }
         }
@@ -268,7 +295,12 @@ fun StepTwoScreen(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun StepThreeScreen(modifier: Modifier = Modifier) {
+fun StepThreeScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    mainNavController: NavController,
+    stateToNavigate: String
+) {
     var surname by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
@@ -284,7 +316,7 @@ fun StepThreeScreen(modifier: Modifier = Modifier) {
                 HeaderSection(title = "Здравствуйте!")
 
                 Text(
-                    "Введите ваше имя",
+                    "Введите вашу фамалию",
                     modifier = Modifier.padding(top = 32.dp),
                     style = TextStyle(
                         fontSize = 24.sp,
@@ -324,7 +356,9 @@ fun StepThreeScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
-                    onClick = { }
+                    onClick = { /* переход на главную при условии что поля заполнены */
+                        mainNavController.navigate(stateToNavigate)
+                    }
                 ) {
                     Text("Применить")
                 }
@@ -333,7 +367,9 @@ fun StepThreeScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(
                         top = 42.dp,
                         bottom = 88.dp
-                    )
+                    ),
+                    navController = navController,
+                    selected = options[2]
                 )
             }
         }
@@ -363,9 +399,13 @@ fun HeaderSection(modifier: Modifier = Modifier, title: String) {
 }
 
 @Composable
-fun StepSegmentedButton(modifier: Modifier = Modifier) {
+fun StepSegmentedButton(
+    modifier: Modifier = Modifier,
+    selected: String,
+    navController: NavController
+) {
     var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf("Шаг 1", "Шаг 2", "Шаг 3")
+
 
     SingleChoiceSegmentedButtonRow(
         modifier = modifier.fillMaxWidth()
@@ -377,8 +417,11 @@ fun StepSegmentedButton(modifier: Modifier = Modifier) {
                     index = index,
                     count = options.size
                 ),
-                onClick = { selectedIndex = index },
-                selected = index == selectedIndex,
+                onClick = {
+                    selectedIndex = index
+                    navController.navigate(options[index])
+                },
+                selected = label == selected,
                 label = { Text(label) }
             )
         }
