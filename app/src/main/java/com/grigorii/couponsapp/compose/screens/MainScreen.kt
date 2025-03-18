@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 
 
@@ -55,7 +56,7 @@ data class CardItemContent(
 )
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +88,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 ),
             )
 
-            CouponsSection(tempItemss)
+            CouponsSection(tempItemss, navController = navController)
         }
 
 
@@ -161,7 +162,7 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun CouponsSection(tempItemss: List<CardItemContent>) {
+private fun CouponsSection(tempItemss: List<CardItemContent>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,6 +188,7 @@ private fun CouponsSection(tempItemss: List<CardItemContent>) {
                         .height(IntrinsicSize.Max)
                         .width(282.dp)
                         .height(337.dp),
+                    navController = navController,
                     title = item.title,
                     painter = item.painter,
                     imageDescription = item.imageDescription,
@@ -234,6 +236,7 @@ private fun OffersSection(tempItemss: List<CardItemContent>) {
 @Composable
 fun CardItem(
     modifier: Modifier = Modifier,
+    navController: NavController,
     title: String,
     painter: Painter,
     imageDescription: String,
@@ -292,7 +295,9 @@ fun CardItem(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedButton(
-                onClick = { },
+                onClick = {
+                    navController.navigate("CouponDetailsScreen")
+                },
                 modifier = Modifier
                     .height(40.dp)
                     .fillMaxWidth()

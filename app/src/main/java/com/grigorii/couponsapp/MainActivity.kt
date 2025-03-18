@@ -97,7 +97,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {
-                            MainScreen(Modifier.padding(innerPadding))
+                            MainScreen(
+                                Modifier.padding(innerPadding),
+                                navController = navController
+                            )
                             showBottomBarState.value = true
                         }
                         composable("Каталог") {
@@ -123,6 +126,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
+                        composable("CouponDetailsScreen") { CouponDetailsScreen() }
                     }
                 }
             }

@@ -181,7 +181,7 @@ fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
                         )
                     )
 
-                    ContentScale(tempItemss = tempItemss)
+                    ContentScale(tempItemss = tempItemss, navController = navController)
                 }
 
                 item {
@@ -276,7 +276,7 @@ fun ShowMoreButton(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ContentScale(tempItemss: List<CardItemContent>) {
+fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -287,6 +287,7 @@ fun ContentScale(tempItemss: List<CardItemContent>) {
         tempItemss.forEach { item ->
             CardItem(
                 modifier = Modifier.height(337.dp),
+                navController = navController,
                 title = item.title,
                 painter = item.painter,
                 imageDescription = item.imageDescription,
