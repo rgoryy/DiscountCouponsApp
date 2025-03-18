@@ -37,9 +37,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun FilterScreen(modifier: Modifier = Modifier) {
+fun FilterScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     Column(
         modifier = Modifier
@@ -54,7 +55,11 @@ fun FilterScreen(modifier: Modifier = Modifier) {
                 title = "Фильтры"
             )
 
-            BackButton(modifier = Modifier.padding(top = 32.dp))
+            BackButton(
+                modifier = Modifier.padding(top = 32.dp),
+                navController = navController,
+                stateToNavigate = "Каталог"
+            )
 
             CategoriesSection()
 
@@ -75,9 +80,13 @@ fun FilterScreen(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun BackButton(modifier: Modifier = Modifier) {
+fun BackButton(
+    modifier: Modifier = Modifier, navController: NavController, stateToNavigate: String
+) {
     OutlinedButton(
-        onClick = { },
+        onClick = {
+            navController.navigate(stateToNavigate)
+        },
         modifier = modifier.height(40.dp)
     ) {
         Icon(
@@ -121,7 +130,9 @@ fun CategoriesSection(modifier: Modifier = Modifier) {
         )
     )
 
-    LazyColumn(modifier = Modifier.padding(top = 16.dp).height(170.dp)) {
+    LazyColumn(modifier = Modifier
+        .padding(top = 16.dp)
+        .height(170.dp)) {
         item {
             categories.forEach { label ->
                 Row(

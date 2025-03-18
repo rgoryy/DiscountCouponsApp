@@ -32,6 +32,7 @@ import com.grigorii.couponsapp.compose.CouponsTheme
 import com.grigorii.couponsapp.compose.screens.CatalogScreen
 import com.grigorii.couponsapp.compose.screens.CouponDetailsScreen
 import com.grigorii.couponsapp.compose.screens.FavoritesScreen
+import com.grigorii.couponsapp.compose.screens.FilterScreen
 import com.grigorii.couponsapp.compose.screens.GreetingsScreen
 import com.grigorii.couponsapp.compose.screens.MainScreen
 
@@ -100,7 +101,10 @@ class MainActivity : ComponentActivity() {
                             showBottomBarState.value = true
                         }
                         composable("Каталог") {
-                            CatalogScreen(Modifier.padding(innerPadding))
+                            CatalogScreen(
+                                Modifier.padding(innerPadding),
+                                navController = navController
+                            )
                             showBottomBarState.value = true
                         }
                         composable("Избранное") {
@@ -112,6 +116,11 @@ class MainActivity : ComponentActivity() {
                             GreetingsScreen(
                                 mainNavController = navController,
                                 stateToNavigate = "Главная"
+                            )
+                        }
+                        composable("FilterScreen") {
+                            FilterScreen(
+                                navController = navController
                             )
                         }
                     }

@@ -34,11 +34,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(modifier: Modifier = Modifier) {
+fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     var text by remember { mutableStateOf("") }
 
@@ -105,7 +106,11 @@ fun CatalogScreen(modifier: Modifier = Modifier) {
                 }
 
                 item {
-                    FilterButton(modifier = Modifier.padding(top = 32.dp))
+                    FilterButton(
+                        modifier = Modifier.padding(top = 32.dp),
+                        navController = navController,
+                        stateToNavigate = "FilterScreen"
+                    )
                 }
 
                 item {
@@ -218,9 +223,13 @@ private fun HeaderSection() {
 }
 
 @Composable
-fun FilterButton(modifier: Modifier = Modifier) {
+fun FilterButton(
+    modifier: Modifier = Modifier, navController: NavController, stateToNavigate: String
+) {
     OutlinedButton(
-        onClick = { },
+        onClick = {
+            navController.navigate(stateToNavigate)
+        },
         modifier = modifier.height(40.dp)
     ) {
         Icon(
