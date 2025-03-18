@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.grigorii.couponsapp.compose.CouponsTheme
 import com.grigorii.couponsapp.compose.screens.CatalogScreen
+import com.grigorii.couponsapp.compose.screens.CouponDetailsScreen
 import com.grigorii.couponsapp.compose.screens.FavoritesScreen
 import com.grigorii.couponsapp.compose.screens.MainScreen
 
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 val navItemList = listOf(
-                    NavItem("Главаная", Icons.Default.Home),
+                    NavItem("Главная", Icons.Default.Home),
                     NavItem("Каталог", Icons.Default.Menu),
                     NavItem("Избранное", Icons.Default.FavoriteBorder),
                 )
@@ -69,10 +70,10 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController,
-                        startDestination = "Каталог",
+                        startDestination = "Главная",
                         Modifier.padding(innerPadding)
                     ) {
-                        composable("Главаная") { MainScreen(Modifier.padding(innerPadding)) }
+                        composable("Главная") { MainScreen(Modifier.padding(innerPadding)) }
                         composable("Каталог") { CatalogScreen(Modifier.padding(innerPadding)) }
                         composable("Избранное") { FavoritesScreen(Modifier.padding(innerPadding)) }
                     }
