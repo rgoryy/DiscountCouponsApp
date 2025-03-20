@@ -25,10 +25,13 @@ class CatalogScreenViewModel : ViewModel() {
         uiState = CatalogScreenState.Loading
 
         viewModelScope.launch {
-            val catalogScreenContentData = couponContentUseCase.loadOfferCoupons()
-
-            withContext(Dispatchers.Default) {
-                uiState = CatalogScreenState.Success(catalogScreenContentData)
+            try {
+                val catalogScreenContentData = couponContentUseCase.loadOfferCoupons()
+                withContext(Dispatchers.Default) {
+                    uiState = CatalogScreenState.Success(catalogScreenContentData)
+                }
+            } catch (e: Exception) {
+                uiState = CatalogScreenState.Error("Ошибка загрузки данных")
             }
         }
     }
@@ -36,7 +39,7 @@ class CatalogScreenViewModel : ViewModel() {
 
 sealed class CatalogScreenState {
     data object Loading : CatalogScreenState()
-
+    // есть необходимость делать отдельный DTO CatalogScreenContentData?
     data class Success(val coupons: List<Coupon>) : CatalogScreenState()
-
+    data class Error(val message: String) : CatalogScreenState()
 }

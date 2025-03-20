@@ -63,15 +63,18 @@ fun MainScreen(
     navController: NavController,
     viewModel: MainScreenViewModel
 ) {
-    when (viewModel.uiState) {
+    when (val state = viewModel.uiState) {
         is MainScreenState.Loading -> LoadingScreen()
-        is MainScreenState.Success -> MainScreenSuccess(navController,
-            (viewModel.uiState as MainScreenState.Success).mainScreenData)
+        is MainScreenState.Success -> MainScreenSuccess(
+            navController,
+            (viewModel.uiState as MainScreenState.Success).mainScreenData
+        )
+        is MainScreenState.Error -> Text(text = "Ошибка: ${state.message}")
     }
 }
 
 @Composable
-fun MainScreenSuccess(navController: NavController, contentData : MainScreenContentData) {
+fun MainScreenSuccess(navController: NavController, contentData: MainScreenContentData) {
     val offerCoupons = contentData.offerCoupons
     val userCoupons = contentData.userCoupons
 
@@ -290,6 +293,7 @@ fun CardItem(
         ) {
             OutlinedButton(
                 onClick = {
+                    //todo передавать id или передавать все данные купона
                     navController.navigate("CouponDetailsScreen")
                 },
                 modifier = Modifier
