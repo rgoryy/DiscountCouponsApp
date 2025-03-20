@@ -30,7 +30,7 @@ import com.grigorii.couponsapp.R
 
 @Composable
 fun CouponDetailsScreen(modifier: Modifier = Modifier) {
-    var couponDetails = CardItemContent(
+    val couponDetails = CardItemContent(
         title = "Консультации психолога",
         painter = painterResource(id = R.drawable.psycholog),
         imageDescription = "Консультации психолога",

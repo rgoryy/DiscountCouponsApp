@@ -35,8 +35,12 @@ import com.grigorii.couponsapp.compose.screens.FavoritesScreen
 import com.grigorii.couponsapp.compose.screens.FilterScreen
 import com.grigorii.couponsapp.compose.screens.GreetingsScreen
 import com.grigorii.couponsapp.compose.screens.MainScreen
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val mainScreenViewModel = MainScreenViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -93,13 +97,15 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "GreetingsScreen",
+                        startDestination = "Главная",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {
+                            mainScreenViewModel.fetchContent()
                             MainScreen(
                                 Modifier.padding(innerPadding),
-                                navController = navController
+                                navController = navController,
+                                viewModel = mainScreenViewModel
                             )
                             showBottomBarState.value = true
                         }

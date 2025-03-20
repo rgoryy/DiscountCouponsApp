@@ -43,7 +43,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.grigorii.couponsapp.R
+import com.grigorii.couponsapp.compose.model.MainScreenContentData
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenState
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 
 data class CardItemContent(
@@ -56,7 +58,23 @@ data class CardItemContent(
 )
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: MainScreenViewModel
+) {
+    when (viewModel.uiState) {
+        is MainScreenState.Loading -> LoadingScreen()
+        is MainScreenState.Success -> MainScreenSuccess(navController,
+            (viewModel.uiState as MainScreenState.Success).mainScreenData)
+    }
+}
+
+@Composable
+fun MainScreenSuccess(navController: NavController, contentData : MainScreenContentData) {
+    val offerCoupons = contentData.offerCoupons
+    val userCoupons = contentData.userCoupons
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -69,58 +87,34 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
         }
 
         item {
-            val tempItemss = listOf(
+            val offerCouponsContent = offerCoupons.map { coupon ->
                 CardItemContent(
-                    title = "Консультации психолога",
-                    painter = painterResource(id = R.drawable.psycholog),
-                    imageDescription = "Консультации психолога",
-                    location = "г. Томск",
-                    price = "2000 руб.",
-                    validityPeriod = "sss"
-                ),
-                CardItemContent(
-                    title = "Занятия по танцам",
-                    painter = painterResource(id = R.drawable.sportclub),
-                    imageDescription = "Занятия по танцам",
-                    location = "г.Томск",
-                    price = "2000 руб.",
-                    validityPeriod = "sss"
-                ),
-            )
+                    title = coupon.title,
+                    painter = painterResource(id = coupon.imageResourceId),
+                    imageDescription = coupon.imageDescription,
+                    location = coupon.location,
+                    price = coupon.price,
+                    validityPeriod = coupon.validityPeriod
+                )
+            }
 
-            CouponsSection(tempItemss, navController = navController)
+            CouponsSection(offerCouponsContent, navController = navController)
         }
 
 
         item {
-            val tempItemss = listOf(
+            val userCouponsContent = userCoupons.map { coupon ->
                 CardItemContent(
-                    title = "Курс “Разработка Android-приложений”",
-                    painter = painterResource(id = R.drawable.android),
-                    imageDescription = "Консультации психолога",
-                    location = "г. Томск",
-                    price = "2000 руб.",
-                    validityPeriod = "действителен до 31.05.2025"
-                ),
-                CardItemContent(
-                    title = "Курс по английскому языку",
-                    painter = painterResource(id = R.drawable.engl),
-                    imageDescription = "Курс по английскому языку",
-                    location = "г.Томск",
-                    price = "2000 руб.",
-                    validityPeriod = "действителен до 20.05.2025"
-                ),
-                CardItemContent(
-                    title = "Онлайн-курс по фотографии",
-                    painter = painterResource(id = R.drawable.photo),
-                    imageDescription = "Онлайн-курс по фотографии",
-                    location = "г.Томск",
-                    price = "2000 руб.",
-                    validityPeriod = "действителен до 20.05.2025"
-                ),
-            )
+                    title = coupon.title,
+                    painter = painterResource(id = coupon.imageResourceId),
+                    imageDescription = coupon.imageDescription,
+                    location = coupon.location,
+                    price = coupon.price,
+                    validityPeriod = coupon.validityPeriod
+                )
+            }
 
-            OffersSection(tempItemss)
+            UserCouponsSection(userCouponsContent)
         }
     }
 }
@@ -162,7 +156,7 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun CouponsSection(tempItemss: List<CardItemContent>, navController: NavController) {
+private fun CouponsSection(cardItems: List<CardItemContent>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +176,7 @@ private fun CouponsSection(tempItemss: List<CardItemContent>, navController: Nav
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(tempItemss) { item ->
+            items(cardItems) { item ->
                 CardItem(
                     modifier = Modifier
                         .height(IntrinsicSize.Max)
@@ -201,7 +195,7 @@ private fun CouponsSection(tempItemss: List<CardItemContent>, navController: Nav
 }
 
 @Composable
-private fun OffersSection(tempItemss: List<CardItemContent>) {
+private fun UserCouponsSection(cardItems: List<CardItemContent>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +214,7 @@ private fun OffersSection(tempItemss: List<CardItemContent>) {
                 .padding(bottom = 8.dp)
         )
 
-        tempItemss.forEach { item ->
+        cardItems.forEach { item ->
             CardOfferItem(
                 modifier = Modifier.height(IntrinsicSize.Max),
                 title = item.title,
