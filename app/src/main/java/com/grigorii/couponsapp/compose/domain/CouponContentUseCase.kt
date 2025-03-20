@@ -1,9 +1,10 @@
 package com.grigorii.couponsapp.compose.domain
 
+import com.grigorii.couponsapp.compose.model.Coupon
 import com.grigorii.couponsapp.compose.model.MainScreenContentData
 import com.grigorii.couponsapp.compose.repository.CouponRepository
 
-class CouponContentUseCase{
+class CouponContentUseCase {
     private val couponRepository = CouponRepository()
 
     suspend fun loadContent(): MainScreenContentData {
@@ -12,4 +13,11 @@ class CouponContentUseCase{
 
         return MainScreenContentData(offerCoupons, userCoupons)
     }
+
+    suspend fun loadOfferCoupons(): List<Coupon> {
+        val offerCoupons = couponRepository.loadOfferCoupons()
+
+        return offerCoupons
+    }
+
 }

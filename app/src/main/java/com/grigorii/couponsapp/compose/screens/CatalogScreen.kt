@@ -35,12 +35,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.grigorii.couponsapp.R
+import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenState
+import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
+
+@Composable
+fun CatalogScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: CatalogScreenViewModel
+) {
+    when (viewModel.uiState) {
+        is CatalogScreenState.Loading -> LoadingScreen()
+        is CatalogScreenState.Success -> CatalogScreenSuccess(
+            navController = navController,
+            offerCoupons = (viewModel.uiState as CatalogScreenState.Success).coupons
+        )
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
-
+fun CatalogScreenSuccess(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    offerCoupons: List<Coupon>
+) {
     var text by remember { mutableStateOf("") }
 
     var active by remember { mutableStateOf(false) }
@@ -114,74 +135,86 @@ fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
                 }
 
                 item {
-                    val tempItemss = listOf(
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        )
-                    )
+                    /*    val offerItemsContent = listOf(
+                            CardItemContent(
+                                title = "Консультации психолога",
+                                painter = painterResource(id = R.drawable.psycholog),
+                                imageDescription = "Консультации психолога",
+                                location = "г. Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Занятия по танцам",
+                                painter = painterResource(id = R.drawable.sportclub),
+                                imageDescription = "Занятия по танцам",
+                                location = "г.Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Консультации психолога",
+                                painter = painterResource(id = R.drawable.psycholog),
+                                imageDescription = "Консультации психолога",
+                                location = "г. Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Занятия по танцам",
+                                painter = painterResource(id = R.drawable.sportclub),
+                                imageDescription = "Занятия по танцам",
+                                location = "г.Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Консультации психолога",
+                                painter = painterResource(id = R.drawable.psycholog),
+                                imageDescription = "Консультации психолога",
+                                location = "г. Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Занятия по танцам",
+                                painter = painterResource(id = R.drawable.sportclub),
+                                imageDescription = "Занятия по танцам",
+                                location = "г.Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Консультации психолога",
+                                painter = painterResource(id = R.drawable.psycholog),
+                                imageDescription = "Консультации психолога",
+                                location = "г. Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            ),
+                            CardItemContent(
+                                title = "Занятия по танцам",
+                                painter = painterResource(id = R.drawable.sportclub),
+                                imageDescription = "Занятия по танцам",
+                                location = "г.Томск",
+                                price = "2000 руб.",
+                                validityPeriod = "sss"
+                            )
+                        )*/
 
-                    ContentScale(tempItemss = tempItemss, navController = navController)
+                    val offerItemsContent = offerCoupons.map { coupon ->
+                        CardItemContent(
+                            title = coupon.title,
+                            painter = painterResource(id = coupon.imageResourceId),
+                            imageDescription = coupon.imageDescription,
+                            location = coupon.location,
+                            price = coupon.price,
+                            validityPeriod = coupon.validityPeriod
+                        )
+                    }
+
+
+                    ContentScale(tempItemss = offerItemsContent, navController = navController)
                 }
 
                 item {
