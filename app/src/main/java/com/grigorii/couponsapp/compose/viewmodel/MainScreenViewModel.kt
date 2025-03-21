@@ -13,31 +13,56 @@ import kotlinx.coroutines.withContext
 
 class MainScreenViewModel : ViewModel() {
 
-    private val couponContentUseCase = CouponContentUseCase()
-
     var offerCouponsState by mutableStateOf<MainScreenCouponLoadingState>(MainScreenCouponLoadingState.Loading)
         private set
 
     var usersCouponsState by mutableStateOf<MainScreenCouponLoadingState>(MainScreenCouponLoadingState.Loading)
         private set
 
+    private val couponContentUseCase = CouponContentUseCase()
+
+    private var offerCouponsPage = 1
+    private var userCouponsPage = 1
+    private val userPageSize = 3
+    private val offersPageSize = 2
+
+    private val currentLoadedOfferCoupons = mutableListOf<Coupon>()
+    private val currentLoadedUserCoupons  = mutableListOf<Coupon>()
+
     fun fetchContent() {
+        fetchUserCoupons()
+        fetchOfferCoupons()
+    }
+
+    fun fetchUserCoupons() {
         viewModelScope.launch {
             try {
-                val userCoupons = couponContentUseCase.loadUsersCoupons()
+                val userCoupons = couponContentUseCase.loadUserCoupons(userCouponsPage, userPageSize)
+                userCouponsPage++
+
+                val updatedUserCoupons = currentLoadedUserCoupons + userCoupons
+                currentLoadedUserCoupons.addAll(userCoupons)
+
                 withContext(Dispatchers.Default) {
-                    usersCouponsState = MainScreenCouponLoadingState.Success(userCoupons)
+                    usersCouponsState = MainScreenCouponLoadingState.Success(updatedUserCoupons)
                 }
             } catch (e: Exception) {
                 usersCouponsState = MainScreenCouponLoadingState.Error("Ошибка загрузки купонов пользователя")
             }
         }
+    }
 
+    fun fetchOfferCoupons() {
         viewModelScope.launch {
             try {
-                val offerCoupons = couponContentUseCase.loadOfferCoupons()
+                val offerCoupons = couponContentUseCase.loadOfferCoupons(offerCouponsPage, offersPageSize)
+                offerCouponsPage++
+
+                val updatedOfferCoupons = currentLoadedOfferCoupons + offerCoupons
+                currentLoadedOfferCoupons.addAll(offerCoupons)
+
                 withContext(Dispatchers.Default) {
-                    offerCouponsState = MainScreenCouponLoadingState.Success(offerCoupons)
+                    offerCouponsState = MainScreenCouponLoadingState.Success(updatedOfferCoupons)
                 }
             } catch (e: Exception) {
                 offerCouponsState = MainScreenCouponLoadingState.Error("Ошибка загрузки предложений")

@@ -161,7 +161,7 @@ fun CatalogScreenSuccess(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        ShowMoreButton()
+                        ShowMoreButton(onButtonClick = { TODO("") })
                     }
                 }
             }
@@ -220,9 +220,9 @@ fun FilterButton(
 }
 
 @Composable
-fun ShowMoreButton(modifier: Modifier = Modifier) {
+fun ShowMoreButton(modifier: Modifier = Modifier, onButtonClick: () -> Unit = { }) {
     OutlinedButton(
-        onClick = { },
+        onClick = onButtonClick,
         modifier = modifier.height(40.dp)
     ) {
         Icon(

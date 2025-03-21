@@ -85,7 +85,9 @@ fun MainScreen(
                 MainScreenContentData(
                     null,
                     null
-                )
+                ),
+                onLoadMoreOfferCouponsButtonClick = { },
+                onLoadMoreUserCouponsButtonClick = { }
             )
 
         offerCouponsState is MainScreenCouponLoadingState.Error -> {
@@ -104,7 +106,13 @@ fun MainScreen(
                 MainScreenContentData(
                     offerCoupons = offerCoupons,
                     userCoupons = userCoupons
-                )
+                ),
+                onLoadMoreOfferCouponsButtonClick = {
+                    viewModel.fetchOfferCoupons()
+                },
+                onLoadMoreUserCouponsButtonClick = {
+                    TODO("")
+                }
             )
         }
     }
@@ -113,7 +121,9 @@ fun MainScreen(
 @Composable
 fun MainScreenSuccess(
     navController: NavController,
-    contentData: MainScreenContentData
+    contentData: MainScreenContentData,
+    onLoadMoreOfferCouponsButtonClick: () -> Unit,
+    onLoadMoreUserCouponsButtonClick: () -> Unit,
 ) {
     val offerCoupons = contentData.offerCoupons
     val userCoupons = contentData.userCoupons
@@ -141,9 +151,17 @@ fun MainScreenSuccess(
                         validityPeriod = coupon.validityPeriod
                     )
                 }
-                OfferCouponsSection(offerCouponsContent, navController = navController)
+                OfferCouponsSection(
+                    offerCouponsContent,
+                    navController = navController,
+                    onLoadMoreOfferCouponsButtonClick = onLoadMoreOfferCouponsButtonClick
+                )
             } else {
-                OfferCouponsSection(null, navController = navController)
+                OfferCouponsSection(
+                    null,
+                    navController = navController,
+                    onLoadMoreOfferCouponsButtonClick = {/* do nothing */ }
+                )
             }
         }
 
@@ -206,7 +224,11 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController: NavController) {
+private fun OfferCouponsSection(
+    cardItems: List<CardItemContent>?,
+    navController: NavController,
+    onLoadMoreOfferCouponsButtonClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -258,7 +280,7 @@ private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController
                     modifier = cardOffersItemModifier,
                     contentAlignment = Alignment.Center
                 ) {
-                    ShowMoreButton()
+                    ShowMoreButton(onButtonClick = onLoadMoreOfferCouponsButtonClick)
                 }
             }
         }
@@ -266,7 +288,10 @@ private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController
 }
 
 @Composable
-private fun UserCouponsSection(cardItems: List<CardItemContent>?, isLoading: Boolean) {
+private fun UserCouponsSection(
+    cardItems: List<CardItemContent>?,
+    isLoading: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

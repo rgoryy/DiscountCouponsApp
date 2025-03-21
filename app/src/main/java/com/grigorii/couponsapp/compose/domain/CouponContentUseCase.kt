@@ -22,4 +22,11 @@ class CouponContentUseCase {
         return couponRepository.loadUserCoupons()
     }
 
+    suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<Coupon> {
+        return couponRepository.loadOfferCoupons(page, pageSize)
+    }
+
+    suspend fun loadUserCoupons(page: Int, pageSize: Int): List<Coupon> {
+        return couponRepository.loadUserCoupons(page, pageSize)
+    }
 }
