@@ -40,12 +40,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.MainScreenContentData
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenCouponLoadingState
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
@@ -69,37 +71,43 @@ fun MainScreen(
     val offerCouponsState = viewModel.offerCouponsState
     val userCouponsState = viewModel.usersCouponsState
 
-    if (offerCouponsState is MainScreenCouponLoadingState.Loading && userCouponsState is MainScreenCouponLoadingState.Loading) {
-        MainScreenSuccess(
-            navController,
-            MainScreenContentData(
-                null, null
+
+    val offerCoupons =
+        (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+    val userCoupons =
+        (userCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+
+
+    when {
+        offerCouponsState is MainScreenCouponLoadingState.Loading && userCouponsState is MainScreenCouponLoadingState.Loading ->
+            MainScreenSuccess(
+                navController,
+                MainScreenContentData(
+                    null,
+                    null
+                )
             )
-        )
-    }
 
-    if (offerCouponsState is MainScreenCouponLoadingState.Success || userCouponsState is MainScreenCouponLoadingState.Success) {
-        MainScreenSuccess(
-            navController,
-            MainScreenContentData(
-                offerCoupons = (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons
-                    ?: emptyList(),
-                userCoupons = (userCouponsState as? MainScreenCouponLoadingState.Success)?.coupons
-                    ?: emptyList()
+        offerCouponsState is MainScreenCouponLoadingState.Error -> {
+            Text(text = "Ошибка: ${offerCouponsState.message}")
+            return
+        }
+
+        userCouponsState is MainScreenCouponLoadingState.Error -> {
+            Text(text = "Ошибка: ${userCouponsState.message}")
+            return
+        }
+
+        else -> {
+            MainScreenSuccess(
+                navController,
+                MainScreenContentData(
+                    offerCoupons = offerCoupons,
+                    userCoupons = userCoupons
+                )
             )
-        )
+        }
     }
-
-    if (offerCouponsState is MainScreenCouponLoadingState.Error) {
-        Text(text = "Ошибка: ${offerCouponsState.message}")
-        return
-    }
-
-    if (userCouponsState is MainScreenCouponLoadingState.Error) {
-        Text(text = "Ошибка: ${userCouponsState.message}")
-        return
-    }
-
 }
 
 @Composable
@@ -137,7 +145,6 @@ fun MainScreenSuccess(
             } else {
                 OfferCouponsSection(null, navController = navController)
             }
-
         }
 
 
@@ -186,7 +193,7 @@ private fun HeaderSection() {
         Spacer(Modifier.width(16.dp))
 
         Text(
-            "Привет, Григорий",
+            stringResource(id = R.string.welcome_message_part) + " " + "Григорий",
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
@@ -203,11 +210,11 @@ private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 32.dp),
+            .padding(start = 16.dp, top = 32.dp, end = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "Предложения",
+            stringResource(id = R.string.offer_section_title),
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
@@ -216,7 +223,9 @@ private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController
         )
 
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             val cardOffersItemModifier = Modifier
@@ -243,6 +252,15 @@ private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController
                     )
                 }
             }
+
+            item {
+                Box(
+                    modifier = cardOffersItemModifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    ShowMoreButton()
+                }
+            }
         }
     }
 }
@@ -256,7 +274,7 @@ private fun UserCouponsSection(cardItems: List<CardItemContent>?, isLoading: Boo
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            "Мои купоны",
+            stringResource(id = R.string.user_coupons_section_title),
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
@@ -371,7 +389,7 @@ fun CardItemBase(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                Text("Подробнее")
+                Text(stringResource(id = R.string.coupon_details_button_name))
             }
 
             OutlinedButton(

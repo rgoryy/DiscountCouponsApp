@@ -30,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.Coupon
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenState
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
@@ -102,7 +104,7 @@ fun CatalogScreenSuccess(
                                 onExpandedChange = { active = it },
                                 enabled = true,
                                 placeholder = {
-                                    Text("Искать...")
+                                    Text(stringResource(id = R.string.search_bar_placeholder))
                                 },
                                 leadingIcon = null,
                                 trailingIcon = {
@@ -148,7 +150,7 @@ fun CatalogScreenSuccess(
                     }
 
 
-                    ContentScale(tempItemss = offerItemsContent, navController = navController)
+                    CatalogCouponsSection(cardItems = offerItemsContent, navController = navController)
                 }
 
                 item {
@@ -177,7 +179,7 @@ private fun HeaderSection() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            "Каталог",
+            stringResource(id = R.string.catalog),
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
@@ -208,7 +210,7 @@ fun FilterButton(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "Фильтр",
+            text = stringResource(id = R.string.filter_button_name),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
@@ -232,7 +234,7 @@ fun ShowMoreButton(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "Показать еще",
+            text = stringResource(id = R.string.show_more_button_name),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
@@ -243,7 +245,7 @@ fun ShowMoreButton(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController) {
+fun CatalogCouponsSection(cardItems: List<CardItemContent>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,7 +253,7 @@ fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        tempItemss.forEach { item ->
+        cardItems.forEach { item ->
             OfferCardItem(
                 modifier = Modifier.height(337.dp),
                 navController = navController,
