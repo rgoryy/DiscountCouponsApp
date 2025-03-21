@@ -252,7 +252,7 @@ fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController
     ) {
 
         tempItemss.forEach { item ->
-            CardItem(
+            OfferCardItem(
                 modifier = Modifier.height(337.dp),
                 navController = navController,
                 title = item.title,

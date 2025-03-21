@@ -3,6 +3,7 @@ package com.grigorii.couponsapp.compose.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,9 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -44,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.compose.model.MainScreenContentData
-import com.grigorii.couponsapp.compose.viewmodel.MainScreenState
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenCouponLoadingState
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 
@@ -63,18 +66,47 @@ fun MainScreen(
     navController: NavController,
     viewModel: MainScreenViewModel
 ) {
-    when (val state = viewModel.uiState) {
-        is MainScreenState.Loading -> LoadingScreen()
-        is MainScreenState.Success -> MainScreenSuccess(
+    val offerCouponsState = viewModel.offerCouponsState
+    val userCouponsState = viewModel.usersCouponsState
+
+    if (offerCouponsState is MainScreenCouponLoadingState.Loading && userCouponsState is MainScreenCouponLoadingState.Loading) {
+        MainScreenSuccess(
             navController,
-            (viewModel.uiState as MainScreenState.Success).mainScreenData
+            MainScreenContentData(
+                null, null
+            )
         )
-        is MainScreenState.Error -> Text(text = "Ошибка: ${state.message}")
     }
+
+    if (offerCouponsState is MainScreenCouponLoadingState.Success || userCouponsState is MainScreenCouponLoadingState.Success) {
+        MainScreenSuccess(
+            navController,
+            MainScreenContentData(
+                offerCoupons = (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons
+                    ?: emptyList(),
+                userCoupons = (userCouponsState as? MainScreenCouponLoadingState.Success)?.coupons
+                    ?: emptyList()
+            )
+        )
+    }
+
+    if (offerCouponsState is MainScreenCouponLoadingState.Error) {
+        Text(text = "Ошибка: ${offerCouponsState.message}")
+        return
+    }
+
+    if (userCouponsState is MainScreenCouponLoadingState.Error) {
+        Text(text = "Ошибка: ${userCouponsState.message}")
+        return
+    }
+
 }
 
 @Composable
-fun MainScreenSuccess(navController: NavController, contentData: MainScreenContentData) {
+fun MainScreenSuccess(
+    navController: NavController,
+    contentData: MainScreenContentData
+) {
     val offerCoupons = contentData.offerCoupons
     val userCoupons = contentData.userCoupons
 
@@ -90,34 +122,42 @@ fun MainScreenSuccess(navController: NavController, contentData: MainScreenConte
         }
 
         item {
-            val offerCouponsContent = offerCoupons.map { coupon ->
-                CardItemContent(
-                    title = coupon.title,
-                    painter = painterResource(id = coupon.imageResourceId),
-                    imageDescription = coupon.imageDescription,
-                    location = coupon.location,
-                    price = coupon.price,
-                    validityPeriod = coupon.validityPeriod
-                )
+            if (contentData.offerCoupons?.isNotEmpty() == true) {
+                val offerCouponsContent = offerCoupons?.map { coupon ->
+                    CardItemContent(
+                        title = coupon.title,
+                        painter = painterResource(id = coupon.imageResourceId),
+                        imageDescription = coupon.imageDescription,
+                        location = coupon.location,
+                        price = coupon.price,
+                        validityPeriod = coupon.validityPeriod
+                    )
+                }
+                OfferCouponsSection(offerCouponsContent, navController = navController)
+            } else {
+                OfferCouponsSection(null, navController = navController)
             }
 
-            CouponsSection(offerCouponsContent, navController = navController)
         }
 
 
         item {
-            val userCouponsContent = userCoupons.map { coupon ->
-                CardItemContent(
-                    title = coupon.title,
-                    painter = painterResource(id = coupon.imageResourceId),
-                    imageDescription = coupon.imageDescription,
-                    location = coupon.location,
-                    price = coupon.price,
-                    validityPeriod = coupon.validityPeriod
-                )
-            }
+            if (contentData.userCoupons?.isNotEmpty() == true) {
+                val userCouponsContent = userCoupons?.map { coupon ->
+                    CardItemContent(
+                        title = coupon.title,
+                        painter = painterResource(id = coupon.imageResourceId),
+                        imageDescription = coupon.imageDescription,
+                        location = coupon.location,
+                        price = coupon.price,
+                        validityPeriod = coupon.validityPeriod
+                    )
+                }
 
-            UserCouponsSection(userCouponsContent)
+                UserCouponsSection(userCouponsContent, false)
+            } else {
+                UserCouponsSection(null, true)
+            }
         }
     }
 }
@@ -159,7 +199,7 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun CouponsSection(cardItems: List<CardItemContent>, navController: NavController) {
+private fun OfferCouponsSection(cardItems: List<CardItemContent>?, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,26 +219,36 @@ private fun CouponsSection(cardItems: List<CardItemContent>, navController: NavC
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(cardItems) { item ->
-                CardItem(
-                    modifier = Modifier
-                        .height(IntrinsicSize.Max)
-                        .width(282.dp)
-                        .height(337.dp),
-                    navController = navController,
-                    title = item.title,
-                    painter = item.painter,
-                    imageDescription = item.imageDescription,
-                    location = item.location,
-                    price = item.price
-                )
+            val cardOffersItemModifier = Modifier
+                .height(IntrinsicSize.Max)
+                .width(282.dp)
+                .height(337.dp)
+
+            if (cardItems == null) {
+                items(3) {
+                    LoadingOfferCardItem(
+                        modifier = cardOffersItemModifier
+                    )
+                }
+            } else {
+                items(cardItems) { item ->
+                    OfferCardItem(
+                        modifier = cardOffersItemModifier,
+                        navController = navController,
+                        title = item.title,
+                        painter = item.painter,
+                        imageDescription = item.imageDescription,
+                        location = item.location,
+                        price = item.price
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun UserCouponsSection(cardItems: List<CardItemContent>) {
+private fun UserCouponsSection(cardItems: List<CardItemContent>?, isLoading: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -217,28 +267,35 @@ private fun UserCouponsSection(cardItems: List<CardItemContent>) {
                 .padding(bottom = 8.dp)
         )
 
-        cardItems.forEach { item ->
-            CardOfferItem(
-                modifier = Modifier.height(IntrinsicSize.Max),
-                title = item.title,
-                painter = item.painter,
-                imageDescription = item.imageDescription,
-                price = item.price,
-                validityPeriod = item.validityPeriod
-            )
+        if (isLoading) {
+            repeat(3) {
+                LoadingUsersCardItem()
+            }
+        } else {
+            cardItems?.forEach { item ->
+                UsersCardItem(
+                    modifier = Modifier.height(IntrinsicSize.Max),
+                    title = item.title,
+                    painter = item.painter,
+                    imageDescription = item.imageDescription,
+                    price = item.price,
+                    validityPeriod = item.validityPeriod
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CardItem(
+fun CardItemBase(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    title: String,
-    painter: Painter,
-    imageDescription: String,
-    location: String,
-    price: String
+    title: String = "...",
+    location: String = "...",
+    price: String = "...",
+    painter: Painter? = null,
+    imageDescription: String = "...",
+    isLoading: Boolean = true,
+    navController: NavController? = null
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
@@ -246,16 +303,30 @@ fun CardItem(
         ),
         modifier = modifier
     ) {
-
-        Column() {
-            Image(
-                painter = painter,
-                contentDescription = imageDescription,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(153.dp),
-                contentScale = ContentScale.Crop
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(153.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            } else {
+                painter?.let {
+                    Image(
+                        painter = it,
+                        contentDescription = imageDescription,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(153.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         }
 
         Column(modifier = Modifier.padding(top = 16.dp, start = 16.dp)) {
@@ -293,8 +364,7 @@ fun CardItem(
         ) {
             OutlinedButton(
                 onClick = {
-                    //todo передавать id или передавать все данные купона
-                    navController.navigate("CouponDetailsScreen")
+                    navController?.navigate("CouponDetailsScreen")
                 },
                 modifier = Modifier
                     .height(40.dp)
@@ -323,21 +393,73 @@ fun CardItem(
     }
 }
 
-
 @Composable
-fun CardOfferItem(
+fun OfferCardItem(
     modifier: Modifier = Modifier,
+    navController: NavController,
     title: String,
     painter: Painter,
     imageDescription: String,
-    validityPeriod: String,
+    location: String,
     price: String
+) {
+    CardItemBase(
+        modifier = modifier,
+        title = title,
+        location = location,
+        price = price,
+        painter = painter,
+        imageDescription = imageDescription,
+        isLoading = false,
+        navController = navController
+    )
+}
+
+@Composable
+fun LoadingOfferCardItem(modifier: Modifier = Modifier) {
+    CardItemBase(modifier = modifier)
+}
+
+@Composable
+fun UsersCardItem(
+    modifier: Modifier = Modifier,
+    title: String = "...",
+    painter: Painter? = null,
+    imageDescription: String = "...",
+    validityPeriod: String = "...",
+    price: String = "..."
+) {
+    UsersCardItemBase(
+        modifier = modifier,
+        title = title,
+        painter = painter,
+        imageDescription = imageDescription,
+        validityPeriod = validityPeriod,
+        price = price,
+        isLoading = false
+    )
+}
+
+@Composable
+fun LoadingUsersCardItem() {
+    UsersCardItemBase()
+}
+
+@Composable
+fun UsersCardItemBase(
+    modifier: Modifier = Modifier,
+    title: String = "...",
+    painter: Painter? = null,
+    imageDescription: String = "...",
+    validityPeriod: String = "...",
+    price: String = "...",
+    isLoading: Boolean = true
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFFBFE),
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
     ) {
@@ -381,14 +503,31 @@ fun CardOfferItem(
                     .width(80.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                Image(
-                    painter = painter,
-                    contentDescription = imageDescription,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Gray.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(30.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    }
+                } else {
+                    painter?.let {
+                        Image(
+                            painter = it,
+                            contentDescription = imageDescription,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
         }
     }

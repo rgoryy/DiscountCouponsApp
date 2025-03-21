@@ -15,9 +15,11 @@ class CouponContentUseCase {
     }
 
     suspend fun loadOfferCoupons(): List<Coupon> {
-        val offerCoupons = couponRepository.loadOfferCoupons()
+        return couponRepository.loadOfferCoupons()
+    }
 
-        return offerCoupons
+    suspend fun loadUsersCoupons() : List<Coupon> {
+        return couponRepository.loadUserCoupons()
     }
 
 }

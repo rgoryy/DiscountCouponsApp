@@ -3,6 +3,7 @@ package com.grigorii.couponsapp.compose.model
 import androidx.annotation.DrawableRes
 
 data class Coupon(
+    val id: Int,
     val title: String,
     @DrawableRes
     val imageResourceId: Int,
