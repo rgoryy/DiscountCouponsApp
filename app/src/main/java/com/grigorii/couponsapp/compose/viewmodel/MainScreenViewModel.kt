@@ -13,10 +13,14 @@ import kotlinx.coroutines.withContext
 
 class MainScreenViewModel : ViewModel() {
 
-    var offerCouponsState by mutableStateOf<MainScreenCouponLoadingState>(MainScreenCouponLoadingState.Loading)
+    var offerCouponsState by mutableStateOf<MainScreenCouponLoadingState>(
+        MainScreenCouponLoadingState.Loading
+    )
         private set
 
-    var usersCouponsState by mutableStateOf<MainScreenCouponLoadingState>(MainScreenCouponLoadingState.Loading)
+    var usersCouponsState by mutableStateOf<MainScreenCouponLoadingState>(
+        MainScreenCouponLoadingState.Loading
+    )
         private set
 
     private val couponContentUseCase = CouponContentUseCase()
@@ -35,39 +39,52 @@ class MainScreenViewModel : ViewModel() {
     }
 
     fun fetchUserCoupons() {
-        viewModelScope.launch {
-            try {
-                val userCoupons = couponContentUseCase.loadUserCoupons(userCouponsPage, userPageSize)
-                userCouponsPage++
-
-                val updatedUserCoupons = currentLoadedUserCoupons + userCoupons
-                currentLoadedUserCoupons.addAll(userCoupons)
-
-                withContext(Dispatchers.Default) {
-                    usersCouponsState = MainScreenCouponLoadingState.Success(updatedUserCoupons)
-                }
-            } catch (e: Exception) {
-                usersCouponsState = MainScreenCouponLoadingState.Error("Ошибка загрузки купонов пользователя")
-            }
-        }
+        userCouponsPage = fetchCoupons(
+            loadCoupons = { userCouponsPage, userPageSize ->
+                couponContentUseCase.loadUserCoupons(userCouponsPage, userPageSize)
+            },
+            page = userCouponsPage,
+            pageSize = userPageSize,
+            currentLoadedCoupons = currentLoadedUserCoupons,
+            updateState = { state -> usersCouponsState = state }
+        )
     }
 
     fun fetchOfferCoupons() {
+        offerCouponsPage = fetchCoupons(
+            loadCoupons = { offerCouponsPage, offersPageSize ->
+                couponContentUseCase.loadOfferCoupons(offerCouponsPage, offersPageSize)
+            },
+            page = offerCouponsPage,
+            pageSize = offersPageSize,
+            currentLoadedCoupons = currentLoadedOfferCoupons,
+            updateState = { state -> offerCouponsState = state }
+        )
+    }
+
+    private fun fetchCoupons(
+        loadCoupons: suspend (Int, Int) -> List<Coupon>,
+        page: Int,
+        pageSize: Int,
+        currentLoadedCoupons: MutableList<Coupon>,
+        updateState: (MainScreenCouponLoadingState) -> Unit,
+        errorMessage: String = "Ошибка загрузки данных"
+    ): Int {
         viewModelScope.launch {
             try {
-                val offerCoupons = couponContentUseCase.loadOfferCoupons(offerCouponsPage, offersPageSize)
-                offerCouponsPage++
-
-                val updatedOfferCoupons = currentLoadedOfferCoupons + offerCoupons
-                currentLoadedOfferCoupons.addAll(offerCoupons)
+                val coupons = loadCoupons(page, pageSize)
+                val updatedCoupons = currentLoadedCoupons + coupons
+                currentLoadedCoupons.addAll(coupons)
 
                 withContext(Dispatchers.Default) {
-                    offerCouponsState = MainScreenCouponLoadingState.Success(updatedOfferCoupons)
+                    updateState(MainScreenCouponLoadingState.Success(updatedCoupons))
                 }
             } catch (e: Exception) {
-                offerCouponsState = MainScreenCouponLoadingState.Error("Ошибка загрузки предложений")
+                updateState(MainScreenCouponLoadingState.Error(errorMessage))
             }
+
         }
+        return page + 1
     }
 }
 
