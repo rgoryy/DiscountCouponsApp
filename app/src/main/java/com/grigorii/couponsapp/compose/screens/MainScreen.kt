@@ -49,8 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.MainScreenContentData
+import com.grigorii.couponsapp.compose.model.User
 import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
+import com.grigorii.couponsapp.compose.viewmodel.UserLoadingState
 
 
 data class CardItemContent(
@@ -70,9 +72,12 @@ fun MainScreen(
     navController: NavController,
     viewModel: MainScreenViewModel
 ) {
+    val userInfoState = viewModel.userLoadingInfoState
+
     val offerCouponsState = viewModel.offerCouponsState
     val userCouponsState = viewModel.usersCouponsState
 
+    val userInfo = (userInfoState as? UserLoadingState.Success)?.user ?: User("", "", "")
 
     val offerCoupons =
         (offerCouponsState as? CouponLoadingState.Success)?.coupons ?: emptyList()
@@ -81,7 +86,12 @@ fun MainScreen(
 
 
     when {
-        offerCouponsState is CouponLoadingState.Loading && userCouponsState is CouponLoadingState.Loading ->
+        userInfoState is UserLoadingState.Loading -> {
+            LoadingScreen()
+        }
+
+        offerCouponsState is CouponLoadingState.Loading && userCouponsState is CouponLoadingState.Loading
+                && userInfoState is UserLoadingState.Success ->
             MainScreenSuccess(
                 navController,
                 MainScreenContentData(
@@ -89,7 +99,8 @@ fun MainScreen(
                     null
                 ),
                 onLoadMoreOfferCouponsButtonClick = { },
-                onLoadMoreUserCouponsButtonClick = { }
+                onLoadMoreUserCouponsButtonClick = { },
+                userInfo = userInfo
             )
 
         offerCouponsState is CouponLoadingState.Error -> {
@@ -99,6 +110,11 @@ fun MainScreen(
 
         userCouponsState is CouponLoadingState.Error -> {
             Text(text = "Ошибка: ${userCouponsState.message}")
+            return
+        }
+
+        userInfoState is UserLoadingState.Error -> {
+            Text(text = "Ошибка: ${userInfoState.message}")
             return
         }
 
@@ -114,7 +130,8 @@ fun MainScreen(
                 },
                 onLoadMoreUserCouponsButtonClick = {
                     TODO("")
-                }
+                },
+                userInfo = userInfo
             )
         }
     }
@@ -124,6 +141,7 @@ fun MainScreen(
 fun MainScreenSuccess(
     navController: NavController,
     contentData: MainScreenContentData,
+    userInfo: User,
     onLoadMoreOfferCouponsButtonClick: () -> Unit,
     onLoadMoreUserCouponsButtonClick: () -> Unit,
 ) {
@@ -138,7 +156,7 @@ fun MainScreenSuccess(
         horizontalAlignment = Alignment.Start
     ) {
         item {
-            HeaderSection()
+            HeaderSection(userInfo)
         }
 
         item {
@@ -194,7 +212,7 @@ fun MainScreenSuccess(
 }
 
 @Composable
-private fun HeaderSection() {
+private fun HeaderSection(userInfo: User) {
     Row(
         modifier = Modifier
             .background(Color(0xFFFFFBFE))
@@ -208,7 +226,7 @@ private fun HeaderSection() {
             shape = CircleShape
         ) {
             Text(
-                "A",
+                userInfo.surname.take(2),
                 style = TextStyle(color = Color(0xFF21005D)),
                 fontSize = 16.sp
             )
@@ -217,7 +235,7 @@ private fun HeaderSection() {
         Spacer(Modifier.width(16.dp))
 
         Text(
-            stringResource(id = R.string.welcome_message_part) + " " + "Григорий",
+            stringResource(id = R.string.welcome_message_part) + " " + userInfo.name,
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
