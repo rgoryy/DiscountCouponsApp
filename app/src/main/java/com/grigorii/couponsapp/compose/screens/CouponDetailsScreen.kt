@@ -26,19 +26,44 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.grigorii.couponsapp.R
+import com.grigorii.couponsapp.compose.viewmodel.CouponDetailsViewModel
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState1
 
 @Composable
-fun CouponDetailsScreen(modifier: Modifier = Modifier) {
-    val couponDetails = CardItemContent(
-        title = "Консультации психолога",
-        painter = painterResource(id = R.drawable.psycholog),
-        imageDescription = "Консультации психолога",
-        location = "г. Томск",
-        price = "2000 руб.",
-        validityPeriod = "sss"
-    )
+fun CouponDetailsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CouponDetailsViewModel
+) {
 
+    val couponsState = viewModel.couponLoadingState
+
+    val coupon = (couponsState as? CouponLoadingState1.Success)?.coupon
+
+    when(couponsState) {
+        is CouponLoadingState1.Error -> {
+            Text(text = "Ошибка")
+            return
+        }
+
+        CouponLoadingState1.Loading -> LoadingScreen()
+        is CouponLoadingState1.Success -> if (coupon != null) {
+            CouponScreenSuccess(
+                couponDetails = CardItemContent(
+                    title = coupon.title,
+                    painter = painterResource(coupon.imageResourceId),
+                    imageDescription = coupon.imageDescription,
+                    location = coupon.location,
+                    price = coupon.price,
+                    validityPeriod = coupon.validityPeriod,
+                    id = coupon.id,
+                    description = coupon.description
+                ))
+        }
+    }
+}
+
+@Composable
+fun CouponScreenSuccess(modifier: Modifier = Modifier, couponDetails: CardItemContent) {
     LazyColumn(
         modifier = Modifier
             .background(color = Color.White)
@@ -67,7 +92,7 @@ fun CouponDetailsScreen(modifier: Modifier = Modifier) {
                 }
 
                 Text(
-                    "Консультации психолога",
+                    couponDetails.title,
                     style = TextStyle(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Medium
@@ -76,7 +101,9 @@ fun CouponDetailsScreen(modifier: Modifier = Modifier) {
 
                 AddToFavoritesButton(modifier = Modifier.padding(top = 16.dp))
 
-                DescriptionSection(title = couponDetails.title, description = "Получите скидочный купон на консультацию у профессионального психолога! Погрузитесь в мир самопознания и улучшите свое психическое здоровье по специальной цене. Не упустите возможность сделать шаг к лучшей версии себя!\u2028Получите скидочный купон на консультацию у профессионального психолога! Получите скидочный купон на консультацию у профессионального психолога! Погрузитесь в мир самопознания и улучшите свое психическое здоровье по специальной цене. Не упустите возможность сделать шаг к лучшей версии себя!\u2028Получите скидочный купон на консультацию у профессионального психолога!")
+                DescriptionSection(
+                    title = couponDetails.title,
+                    description = couponDetails.description)
 
                 Button(
                     modifier = Modifier
@@ -117,7 +144,9 @@ fun AddToFavoritesButton(modifier: Modifier = Modifier) {
 
 @Composable
 fun DescriptionSection(modifier: Modifier = Modifier, title: String, description: String) {
-    LazyColumn(modifier = Modifier.padding(top = 32.dp).height(140.dp)) {
+    LazyColumn(modifier = Modifier
+        .padding(top = 32.dp)
+        .height(140.dp)) {
         item {
             Text(
                 title,

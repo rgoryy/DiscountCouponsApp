@@ -160,7 +160,9 @@ fun CatalogScreenSuccess(
                             imageDescription = coupon.imageDescription,
                             location = coupon.location,
                             price = coupon.price,
-                            validityPeriod = coupon.validityPeriod
+                            validityPeriod = coupon.validityPeriod,
+                            id = coupon.id,
+                            description = coupon.description
                         )
                     }
 
@@ -281,7 +283,8 @@ fun CatalogCouponsSection(cardItems: List<CardItemContent>, navController: NavCo
                 painter = item.painter,
                 imageDescription = item.imageDescription,
                 price = item.price,
-                location = item.location
+                location = item.location,
+                id = item.id
             )
         }
     }

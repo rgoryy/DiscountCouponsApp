@@ -11,5 +11,5 @@ data class Coupon(
     val location: String,
     val price: String,
     val validityPeriod: String,
-    val description: String? = "Описание недоступно"
+    val description: String = "Описание недоступно"
 )

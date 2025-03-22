@@ -54,12 +54,14 @@ import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 
 data class CardItemContent(
+    val id: Int,
     val title: String,
     val painter: Painter,
     val imageDescription: String,
     val location: String,
     val price: String,
     val validityPeriod: String,
+    val description: String
 )
 
 @Composable
@@ -148,7 +150,9 @@ fun MainScreenSuccess(
                         imageDescription = coupon.imageDescription,
                         location = coupon.location,
                         price = coupon.price,
-                        validityPeriod = coupon.validityPeriod
+                        validityPeriod = coupon.validityPeriod,
+                        id = coupon.id,
+                        description = coupon.description
                     )
                 }
                 OfferCouponsSection(
@@ -175,7 +179,9 @@ fun MainScreenSuccess(
                         imageDescription = coupon.imageDescription,
                         location = coupon.location,
                         price = coupon.price,
-                        validityPeriod = coupon.validityPeriod
+                        validityPeriod = coupon.validityPeriod,
+                        id = coupon.id,
+                        description = coupon.description
                     )
                 }
 
@@ -270,7 +276,8 @@ private fun OfferCouponsSection(
                         painter = item.painter,
                         imageDescription = item.imageDescription,
                         location = item.location,
-                        price = item.price
+                        price = item.price,
+                        id = item.id
                     )
                 }
             }
@@ -331,6 +338,7 @@ private fun UserCouponsSection(
 
 @Composable
 fun CardItemBase(
+    id: Int?,
     modifier: Modifier = Modifier,
     title: String = "...",
     location: String = "...",
@@ -407,7 +415,7 @@ fun CardItemBase(
         ) {
             OutlinedButton(
                 onClick = {
-                    navController?.navigate("CouponDetailsScreen")
+                    navController?.navigate("CouponDetailsScreen/$id")
                 },
                 modifier = Modifier
                     .height(40.dp)
@@ -440,6 +448,7 @@ fun CardItemBase(
 fun OfferCardItem(
     modifier: Modifier = Modifier,
     navController: NavController,
+    id: Int,
     title: String,
     painter: Painter,
     imageDescription: String,
@@ -447,6 +456,7 @@ fun OfferCardItem(
     price: String
 ) {
     CardItemBase(
+        id = id,
         modifier = modifier,
         title = title,
         location = location,
@@ -460,7 +470,7 @@ fun OfferCardItem(
 
 @Composable
 fun LoadingOfferCardItem(modifier: Modifier = Modifier) {
-    CardItemBase(modifier = modifier)
+    CardItemBase(modifier = modifier, id = null)
 }
 
 @Composable

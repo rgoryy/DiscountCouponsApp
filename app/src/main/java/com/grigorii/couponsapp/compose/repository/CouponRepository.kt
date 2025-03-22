@@ -13,7 +13,15 @@ class CouponRepository {
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
-            validityPeriod = "sss"
+            validityPeriod = "sss",
+            description = "Получите скидочный купон на консультацию у профессионального психолога! " +
+                    "Погрузитесь в мир самопознания и улучшите свое психическое здоровье по специальной цене. " +
+                    "Не упустите возможность сделать шаг к лучшей версии себя!\u2028Получите скидочный " +
+                    "купон на консультацию у профессионального психолога! Получите скидочный купон на " +
+                    "консультацию у профессионального психолога! Погрузитесь в мир самопознания и улучшите " +
+                    "свое психическое здоровье по специальной цене. Не упустите возможность сделать " +
+                    "шаг к лучшей версии себя!\u2028Получите скидочный купон на консультацию у " +
+                    "профессионального психолога!"
         ),
         Coupon(
             id = 2,
@@ -54,7 +62,7 @@ class CouponRepository {
 
     private val userCoupons = listOf(
         Coupon(
-            id = 3,
+            id = 6,
             title = "Курс “Разработка Android-приложений”",
             imageResourceId = R.drawable.android,
             imageDescription = "Консультации психолога",
@@ -63,7 +71,7 @@ class CouponRepository {
             validityPeriod = "действителен до 31.05.2025"
         ),
         Coupon(
-            id = 4,
+            id = 7,
             title = "Курс по английскому языку",
             imageResourceId = R.drawable.engl,
             imageDescription = "Курс по английскому языку",
@@ -72,7 +80,7 @@ class CouponRepository {
             validityPeriod = "действителен до 20.05.2025"
         ),
         Coupon(
-            id = 5,
+            id = 8,
             title = "Онлайн-курс по фотографии",
             imageResourceId = R.drawable.photo,
             imageDescription = "Онлайн-курс по фотографии",

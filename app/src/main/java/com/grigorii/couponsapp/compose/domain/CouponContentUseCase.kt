@@ -29,4 +29,8 @@ class CouponContentUseCase {
     suspend fun loadUserCoupons(page: Int, pageSize: Int): List<Coupon> {
         return couponRepository.loadUserCoupons(page, pageSize)
     }
+
+    suspend fun loadCouponById(id: Int): Coupon? {
+        return couponRepository.loadCouponById(id)
+    }
 }
