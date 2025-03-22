@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.MainScreenContentData
-import com.grigorii.couponsapp.compose.viewmodel.MainScreenCouponLoadingState
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 
@@ -73,13 +73,13 @@ fun MainScreen(
 
 
     val offerCoupons =
-        (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+        (offerCouponsState as? CouponLoadingState.Success)?.coupons ?: emptyList()
     val userCoupons =
-        (userCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+        (userCouponsState as? CouponLoadingState.Success)?.coupons ?: emptyList()
 
 
     when {
-        offerCouponsState is MainScreenCouponLoadingState.Loading && userCouponsState is MainScreenCouponLoadingState.Loading ->
+        offerCouponsState is CouponLoadingState.Loading && userCouponsState is CouponLoadingState.Loading ->
             MainScreenSuccess(
                 navController,
                 MainScreenContentData(
@@ -90,12 +90,12 @@ fun MainScreen(
                 onLoadMoreUserCouponsButtonClick = { }
             )
 
-        offerCouponsState is MainScreenCouponLoadingState.Error -> {
+        offerCouponsState is CouponLoadingState.Error -> {
             Text(text = "Ошибка: ${offerCouponsState.message}")
             return
         }
 
-        userCouponsState is MainScreenCouponLoadingState.Error -> {
+        userCouponsState is CouponLoadingState.Error -> {
             Text(text = "Ошибка: ${userCouponsState.message}")
             return
         }

@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,6 +37,7 @@ import com.grigorii.couponsapp.compose.screens.FilterScreen
 import com.grigorii.couponsapp.compose.screens.GreetingsScreen
 import com.grigorii.couponsapp.compose.screens.MainScreen
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 class MainActivity : ComponentActivity() {
@@ -99,11 +101,15 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Каталог",
+                        startDestination = "Главная",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {
-                            mainScreenViewModel.fetchContent()
+                            LaunchedEffect(key1 = true) {
+                                if (mainScreenViewModel.offerCouponsState is CouponLoadingState.Loading) {
+                                    mainScreenViewModel.fetchContent()
+                                }
+                            }
                             MainScreen(
                                 Modifier.padding(innerPadding),
                                 navController = navController,
@@ -112,7 +118,11 @@ class MainActivity : ComponentActivity() {
                             showBottomBarState.value = true
                         }
                         composable("Каталог") {
-                            catalogScreenViewModel.fetchContent()
+                            LaunchedEffect(key1 = true) {
+                                if (catalogScreenViewModel.offerCouponsState is CouponLoadingState.Loading) {
+                                    catalogScreenViewModel.fetchContent()
+                                }
+                            }
                             CatalogScreen(
                                 Modifier.padding(innerPadding),
                                 navController = navController,

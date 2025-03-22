@@ -35,14 +35,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.Coupon
-import com.grigorii.couponsapp.compose.model.MainScreenContentData
-import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenState
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
-import com.grigorii.couponsapp.compose.viewmodel.MainScreenCouponLoadingState
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
 
 @Composable
 fun CatalogScreen(
@@ -54,17 +51,17 @@ fun CatalogScreen(
     val offerCouponsState = viewModel.offerCouponsState
 
     val offerCoupons =
-        (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+        (offerCouponsState as? CouponLoadingState.Success)?.coupons ?: emptyList()
 
     when (offerCouponsState) {
-        is MainScreenCouponLoadingState.Error -> {
+        is CouponLoadingState.Error -> {
             Text(text = "Ошибка: ${offerCouponsState.message}")
             return
         }
 
-        is MainScreenCouponLoadingState.Loading -> LoadingScreen()
+        is CouponLoadingState.Loading -> LoadingScreen()
 
-        is MainScreenCouponLoadingState.Success -> CatalogScreenSuccess(
+        is CouponLoadingState.Success -> CatalogScreenSuccess(
             navController = navController,
             offerCoupons = offerCoupons,
             onLoadMoreOfferCouponsButtonClick = {
