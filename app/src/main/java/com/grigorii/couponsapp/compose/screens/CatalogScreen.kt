@@ -35,11 +35,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.MainScreenContentData
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenState
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenCouponLoadingState
 
 @Composable
 fun CatalogScreen(
@@ -47,13 +50,27 @@ fun CatalogScreen(
     navController: NavController,
     viewModel: CatalogScreenViewModel
 ) {
-    when (val state = viewModel.uiState) {
-        is CatalogScreenState.Loading -> LoadingScreen()
-        is CatalogScreenState.Success -> CatalogScreenSuccess(
+
+    val offerCouponsState = viewModel.offerCouponsState
+
+    val offerCoupons =
+        (offerCouponsState as? MainScreenCouponLoadingState.Success)?.coupons ?: emptyList()
+
+    when (offerCouponsState) {
+        is MainScreenCouponLoadingState.Error -> {
+            Text(text = "Ошибка: ${offerCouponsState.message}")
+            return
+        }
+
+        is MainScreenCouponLoadingState.Loading -> LoadingScreen()
+
+        is MainScreenCouponLoadingState.Success -> CatalogScreenSuccess(
             navController = navController,
-            offerCoupons = (viewModel.uiState as CatalogScreenState.Success).coupons
+            offerCoupons = offerCoupons,
+            onLoadMoreOfferCouponsButtonClick = {
+                viewModel.fetchOfferCoupons()
+            }
         )
-        is CatalogScreenState.Error -> Text("Ошибка: ${state.message}")
     }
 
 }
@@ -63,7 +80,8 @@ fun CatalogScreen(
 fun CatalogScreenSuccess(
     modifier: Modifier = Modifier,
     navController: NavController,
-    offerCoupons: List<Coupon>
+    offerCoupons: List<Coupon>,
+    onLoadMoreOfferCouponsButtonClick: () -> Unit,
 ) {
     var text by remember { mutableStateOf("") }
 
@@ -150,7 +168,10 @@ fun CatalogScreenSuccess(
                     }
 
 
-                    CatalogCouponsSection(cardItems = offerItemsContent, navController = navController)
+                    CatalogCouponsSection(
+                        cardItems = offerItemsContent,
+                        navController = navController
+                    )
                 }
 
                 item {
@@ -161,7 +182,9 @@ fun CatalogScreenSuccess(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        ShowMoreButton(onButtonClick = { TODO("") })
+                        ShowMoreButton(onButtonClick = {
+                            onLoadMoreOfferCouponsButtonClick()
+                        })
                     }
                 }
             }

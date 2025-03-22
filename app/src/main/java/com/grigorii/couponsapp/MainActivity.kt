@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Главная",
+                        startDestination = "Каталог",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grigorii.couponsapp.compose.domain.CouponContentUseCase
 import com.grigorii.couponsapp.compose.model.Coupon
-import com.grigorii.couponsapp.compose.model.MainScreenContentData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,31 +14,63 @@ import kotlinx.coroutines.withContext
 
 class CatalogScreenViewModel : ViewModel() {
 
-    private val couponContentUseCase = CouponContentUseCase()
-
-    var uiState by mutableStateOf<CatalogScreenState>(CatalogScreenState.Loading)
+    var offerCouponsState by mutableStateOf<MainScreenCouponLoadingState>(
+        MainScreenCouponLoadingState.Loading
+    )
         private set
 
+    private val couponContentUseCase = CouponContentUseCase()
+
+    private var offerCouponsPage = 1
+    private val offersPageSize = 2
+
+    private val currentLoadedOfferCoupons = mutableListOf<Coupon>()
 
     fun fetchContent() {
-        uiState = CatalogScreenState.Loading
+        fetchOfferCoupons()
+    }
 
+    fun fetchOfferCoupons() {
+        offerCouponsPage = fetchCoupons(
+            loadCoupons = { offerCouponsPage, offersPageSize ->
+                couponContentUseCase.loadOfferCoupons(offerCouponsPage, offersPageSize)
+            },
+            page = offerCouponsPage,
+            pageSize = offersPageSize,
+            currentLoadedCoupons = currentLoadedOfferCoupons,
+            updateState = { state -> offerCouponsState = state }
+        )
+    }
+
+
+    private fun fetchCoupons(
+        loadCoupons: suspend (Int, Int) -> List<Coupon>,
+        page: Int,
+        pageSize: Int,
+        currentLoadedCoupons: MutableList<Coupon>,
+        updateState: (MainScreenCouponLoadingState) -> Unit,
+        errorMessage: String = "Ошибка загрузки данных"
+    ): Int {
         viewModelScope.launch {
             try {
-                val catalogScreenContentData = couponContentUseCase.loadOfferCoupons()
+                val coupons = loadCoupons(page, pageSize)
+                val updatedCoupons = currentLoadedCoupons + coupons
+                currentLoadedCoupons.addAll(coupons)
+
                 withContext(Dispatchers.Default) {
-                    uiState = CatalogScreenState.Success(catalogScreenContentData)
+                    updateState(MainScreenCouponLoadingState.Success(updatedCoupons))
                 }
             } catch (e: Exception) {
-                uiState = CatalogScreenState.Error("Ошибка загрузки данных")
+                updateState(MainScreenCouponLoadingState.Error(errorMessage))
             }
+
         }
+        return page + 1
     }
 }
 
 sealed class CatalogScreenState {
     data object Loading : CatalogScreenState()
-    // есть необходимость делать отдельный DTO CatalogScreenContentData?
     data class Success(val coupons: List<Coupon>) : CatalogScreenState()
     data class Error(val message: String) : CatalogScreenState()
 }

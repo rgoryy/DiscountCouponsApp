@@ -27,6 +27,7 @@ class MainScreenViewModel : ViewModel() {
 
     private var offerCouponsPage = 1
     private var userCouponsPage = 1
+
     private val userPageSize = 3
     private val offersPageSize = 2
 
