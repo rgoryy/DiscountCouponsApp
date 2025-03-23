@@ -32,7 +32,7 @@ class CouponDetailsViewModel : ViewModel() {
                     couponLoadingState = CouponLoadingState1.Success(loadedCoupon)
                 }
             } catch (e: Exception) {
-                couponLoadingState = CouponLoadingState1.Error(message = "Coupon can not be loaded")
+                couponLoadingState = CouponLoadingState1.Error("${e.message}")
             }
         }
     }

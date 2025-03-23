@@ -29,13 +29,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.model.CouponApi
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
@@ -155,14 +155,14 @@ fun CatalogScreenSuccess(
                 item {
                     val offerItemsContent = offerCoupons.map { coupon ->
                         CardItemContent(
-                            title = coupon.title,
-                            painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
-                            imageDescription = coupon.imageDescription,
-                            location = coupon.location,
-                            price = coupon.price,
-                            validityPeriod = coupon.validityPeriod,
+                            title = coupon.title ?: "",
+                            painter = rememberAsyncImagePainter(coupon.imageUrl),
+                            imageDescription = coupon.imageDescription ?: "",
+                            location = coupon.location ?: "",
+                            price = coupon.price ?: "",
+                            validityPeriod = coupon.validityPeriod ?: "",
                             id = coupon.id,
-                            description = coupon.description
+                            description = coupon.description ?: ""
                         )
                     }
 

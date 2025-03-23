@@ -4,11 +4,11 @@ import com.grigorii.couponsapp.compose.model.CouponApi
 import kotlinx.coroutines.delay
 
 class CouponRepository {
-    private val offerCoupons = emptyList<CouponApi>()/*listOf(
+    private val offerCoupons = listOf(
         CouponApi(
             id = 1,
             title = "Консультации психолога",
-            imageResourceId = R.drawable.psycholog,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
@@ -25,7 +25,7 @@ class CouponRepository {
         CouponApi(
             id = 2,
             title = "Занятия по танцам",
-            imageResourceId = R.drawable.sportclub,
+            imageUrl = "f",
             imageDescription = "Занятия по танцам",
             location = "г.Томск",
             price = "2000 руб.",
@@ -33,7 +33,7 @@ class CouponRepository {
         ),CouponApi(
             id = 3,
             title = "Курс “Разработка Android-приложений”",
-            imageResourceId = R.drawable.android,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
@@ -42,7 +42,7 @@ class CouponRepository {
         CouponApi(
             id = 4,
             title = "Курс по английскому языку",
-            imageResourceId = R.drawable.engl,
+            imageUrl = "f",
             imageDescription = "Курс по английскому языку",
             location = "г.Томск",
             price = "2000 руб.",
@@ -51,19 +51,19 @@ class CouponRepository {
         CouponApi(
             id = 5,
             title = "Онлайн-курс по фотографии",
-            imageResourceId = R.drawable.photo,
+            imageUrl = "f",
             imageDescription = "Онлайн-курс по фотографии",
             location = "г.Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 20.05.2025"
         ),
-    )*/
+    )
 
-    private val userCoupons = emptyList<CouponApi>()/*listOf(
+    private val userCoupons = listOf(
         CouponApi(
             id = 6,
             title = "Курс “Разработка Android-приложений”",
-            imageResourceId = R.drawable.android,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
@@ -72,7 +72,7 @@ class CouponRepository {
         CouponApi(
             id = 7,
             title = "Курс по английскому языку",
-            imageResourceId = R.drawable.engl,
+            imageUrl = "f",
             imageDescription = "Курс по английскому языку",
             location = "г.Томск",
             price = "2000 руб.",
@@ -81,13 +81,13 @@ class CouponRepository {
         CouponApi(
             id = 8,
             title = "Онлайн-курс по фотографии",
-            imageResourceId = R.drawable.photo,
+            imageUrl = "f",
             imageDescription = "Онлайн-курс по фотографии",
             location = "г.Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 20.05.2025"
         ),
-    )*/
+    )
 
     private val allCoupons = offerCoupons + userCoupons
 
@@ -104,13 +104,12 @@ class CouponRepository {
     suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<CouponApi> {
         delay(2000)
         //временное решение
-        return offerCoupons.drop((page - 1) * pageSize).take(pageSize)
+        return offerCoupons
     }
 
     suspend fun loadUserCoupons(page: Int, pageSize: Int): List<CouponApi> {
-        delay(1000)
         //временное решение
-        return userCoupons.drop((page - 1) * pageSize).take(pageSize)
+        return userCoupons
     }
 
     fun loadCouponById(id: Int): CouponApi? {

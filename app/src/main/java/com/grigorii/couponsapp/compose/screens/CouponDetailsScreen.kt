@@ -21,12 +21,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.grigorii.couponsapp.R
+import coil.compose.rememberAsyncImagePainter
 import com.grigorii.couponsapp.compose.viewmodel.CouponDetailsViewModel
 import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState1
 
@@ -42,7 +41,7 @@ fun CouponDetailsScreen(
 
     when(couponsState) {
         is CouponLoadingState1.Error -> {
-            Text(text = "Ошибка")
+            Text(text = "Ошибка: ${couponsState.message}")
             return
         }
 
@@ -50,14 +49,14 @@ fun CouponDetailsScreen(
         is CouponLoadingState1.Success -> if (coupon != null) {
             CouponScreenSuccess(
                 couponDetails = CardItemContent(
-                    title = coupon.title,
-                    painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
-                    imageDescription = coupon.imageDescription,
-                    location = coupon.location,
-                    price = coupon.price,
-                    validityPeriod = coupon.validityPeriod,
+                    title = coupon.title ?: "",
+                    painter = rememberAsyncImagePainter(coupon.imageUrl),
+                    imageDescription = coupon.imageDescription ?: "",
+                    location = coupon.location ?: "",
+                    price = coupon.price ?: "",
+                    validityPeriod = coupon.validityPeriod ?: "",
                     id = coupon.id,
-                    description = coupon.description
+                    description = coupon.description ?: ""
                 ))
         }
     }
