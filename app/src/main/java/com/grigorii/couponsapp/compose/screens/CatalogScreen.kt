@@ -30,17 +30,56 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
+import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
+
+@Composable
+fun CatalogScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: CatalogScreenViewModel
+) {
+
+    val offerCouponsState = viewModel.offerCouponsState
+
+    val offerCoupons =
+        (offerCouponsState as? CouponLoadingState.Success)?.coupons ?: emptyList()
+
+    when (offerCouponsState) {
+        is CouponLoadingState.Error -> {
+            Text(text = "Ошибка: ${offerCouponsState.message}")
+            return
+        }
+
+        is CouponLoadingState.Loading -> LoadingScreen()
+
+        is CouponLoadingState.Success -> CatalogScreenSuccess(
+            navController = navController,
+            offerCoupons = offerCoupons,
+            onLoadMoreOfferCouponsButtonClick = {
+                viewModel.fetchOfferCoupons()
+            }
+        )
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
-
+fun CatalogScreenSuccess(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    offerCoupons: List<Coupon>,
+    onLoadMoreOfferCouponsButtonClick: () -> Unit,
+) {
     var text by remember { mutableStateOf("") }
 
     var active by remember { mutableStateOf(false) }
@@ -80,7 +119,7 @@ fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
                                 onExpandedChange = { active = it },
                                 enabled = true,
                                 placeholder = {
-                                    Text("Искать...")
+                                    Text(stringResource(id = R.string.search_bar_placeholder))
                                 },
                                 leadingIcon = null,
                                 trailingIcon = {
@@ -114,74 +153,24 @@ fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
                 }
 
                 item {
-                    val tempItemss = listOf(
+                    val offerItemsContent = offerCoupons.map { coupon ->
                         CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Консультации психолога",
-                            painter = painterResource(id = R.drawable.psycholog),
-                            imageDescription = "Консультации психолога",
-                            location = "г. Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
-                        ),
-                        CardItemContent(
-                            title = "Занятия по танцам",
-                            painter = painterResource(id = R.drawable.sportclub),
-                            imageDescription = "Занятия по танцам",
-                            location = "г.Томск",
-                            price = "2000 руб.",
-                            validityPeriod = "sss"
+                            title = coupon.title,
+                            painter = painterResource(id = coupon.imageResourceId),
+                            imageDescription = coupon.imageDescription,
+                            location = coupon.location,
+                            price = coupon.price,
+                            validityPeriod = coupon.validityPeriod,
+                            id = coupon.id,
+                            description = coupon.description
                         )
-                    )
+                    }
 
-                    ContentScale(tempItemss = tempItemss, navController = navController)
+
+                    CatalogCouponsSection(
+                        cardItems = offerItemsContent,
+                        navController = navController
+                    )
                 }
 
                 item {
@@ -192,7 +181,9 @@ fun CatalogScreen(modifier: Modifier = Modifier, navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        ShowMoreButton()
+                        ShowMoreButton(onButtonClick = {
+                            onLoadMoreOfferCouponsButtonClick()
+                        })
                     }
                 }
             }
@@ -210,7 +201,7 @@ private fun HeaderSection() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            "Каталог",
+            stringResource(id = R.string.catalog),
             style = TextStyle(
                 color = Color(0xFF1C1B1F),
                 fontWeight = FontWeight.Normal,
@@ -241,7 +232,7 @@ fun FilterButton(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "Фильтр",
+            text = stringResource(id = R.string.filter_button_name),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
@@ -251,9 +242,9 @@ fun FilterButton(
 }
 
 @Composable
-fun ShowMoreButton(modifier: Modifier = Modifier) {
+fun ShowMoreButton(modifier: Modifier = Modifier, onButtonClick: () -> Unit = { }) {
     OutlinedButton(
-        onClick = { },
+        onClick = onButtonClick,
         modifier = modifier.height(40.dp)
     ) {
         Icon(
@@ -265,7 +256,7 @@ fun ShowMoreButton(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "Показать еще",
+            text = stringResource(id = R.string.show_more_button_name),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
@@ -276,7 +267,7 @@ fun ShowMoreButton(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController) {
+fun CatalogCouponsSection(cardItems: List<CardItemContent>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,15 +275,16 @@ fun ContentScale(tempItemss: List<CardItemContent>, navController: NavController
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        tempItemss.forEach { item ->
-            CardItem(
+        cardItems.forEach { item ->
+            OfferCardItem(
                 modifier = Modifier.height(337.dp),
                 navController = navController,
                 title = item.title,
                 painter = item.painter,
                 imageDescription = item.imageDescription,
                 price = item.price,
-                location = item.location
+                location = item.location,
+                id = item.id
             )
         }
     }

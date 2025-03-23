@@ -19,15 +19,18 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.grigorii.couponsapp.compose.CouponsTheme
 import com.grigorii.couponsapp.compose.screens.CatalogScreen
 import com.grigorii.couponsapp.compose.screens.CouponDetailsScreen
@@ -35,8 +38,17 @@ import com.grigorii.couponsapp.compose.screens.FavoritesScreen
 import com.grigorii.couponsapp.compose.screens.FilterScreen
 import com.grigorii.couponsapp.compose.screens.GreetingsScreen
 import com.grigorii.couponsapp.compose.screens.MainScreen
+import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
+import com.grigorii.couponsapp.compose.viewmodel.CouponDetailsViewModel
+import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
+import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val mainScreenViewModel = MainScreenViewModel()
+    private val catalogScreenViewModel = CatalogScreenViewModel()
+    private val couponDetailsViewModel = CouponDetailsViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -93,20 +105,32 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "GreetingsScreen",
+                        startDestination = "Главная",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {
+                            LaunchedEffect(key1 = true) {
+                                if (mainScreenViewModel.offerCouponsState is CouponLoadingState.Loading) {
+                                    mainScreenViewModel.fetchContent()
+                                }
+                            }
                             MainScreen(
                                 Modifier.padding(innerPadding),
-                                navController = navController
+                                navController = navController,
+                                viewModel = mainScreenViewModel
                             )
                             showBottomBarState.value = true
                         }
                         composable("Каталог") {
+                            LaunchedEffect(key1 = true) {
+                                if (catalogScreenViewModel.offerCouponsState is CouponLoadingState.Loading) {
+                                    catalogScreenViewModel.fetchContent()
+                                }
+                            }
                             CatalogScreen(
                                 Modifier.padding(innerPadding),
-                                navController = navController
+                                navController = navController,
+                                viewModel = catalogScreenViewModel
                             )
                             showBottomBarState.value = true
                         }
@@ -126,7 +150,18 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-                        composable("CouponDetailsScreen") { CouponDetailsScreen() }
+                        composable("CouponDetailsScreen/{couponId}", arguments = listOf(
+                            navArgument("couponId") {
+                                type = NavType.IntType
+                                nullable = false
+                            }
+                        )) { e ->
+                            val couponId = e.arguments?.getInt("couponId") ?: -1
+                            couponDetailsViewModel.fetchCoupon(couponId)
+                            CouponDetailsScreen(
+                                viewModel = couponDetailsViewModel
+                            )
+                        }
                     }
                 }
             }
