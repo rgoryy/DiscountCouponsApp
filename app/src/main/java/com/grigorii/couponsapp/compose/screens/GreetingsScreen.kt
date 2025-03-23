@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.grigorii.couponsapp.compose.viewmodel.GreetingsScreenViewModel
 
 
 val options = listOf("Шаг 1", "Шаг 2", "Шаг 3")
@@ -52,7 +53,8 @@ val options = listOf("Шаг 1", "Шаг 2", "Шаг 3")
 fun GreetingsScreen(
     modifier: Modifier = Modifier,
     mainNavController: NavController,
-    stateToNavigate: String
+    stateToNavigate: String,
+    viewModel: GreetingsScreenViewModel
 ) {
 
     val navController = rememberNavController()
@@ -61,12 +63,13 @@ fun GreetingsScreen(
         options.forEach { step ->
             composable(step) {
                 when (step) {
-                    options[0] -> StepOneScreen(navController = navController)
-                    options[1] -> StepTwoScreen(navController = navController)
+                    options[0] -> StepOneScreen(navController = navController, viewModel = viewModel)
+                    options[1] -> StepTwoScreen(navController = navController, viewModel = viewModel)
                     options[2] -> StepThreeScreen(
                         navController = navController,
                         mainNavController = mainNavController,
-                        stateToNavigate = stateToNavigate
+                        stateToNavigate = stateToNavigate,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -76,7 +79,7 @@ fun GreetingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StepOneScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun StepOneScreen(modifier: Modifier = Modifier, navController: NavController, viewModel: GreetingsScreenViewModel) {
     var searchText by rememberSaveable { mutableStateOf("") }
 
     var expanded by remember { mutableStateOf(true) }
@@ -199,7 +202,10 @@ fun StepOneScreen(modifier: Modifier = Modifier, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
-                    onClick = { navController.navigate(options[1]) }
+                    onClick = {
+                        viewModel.saveUserCity(searchText)
+                        navController.navigate(options[1])
+                    }
                 ) {
                     Text("Применить")
                 }
@@ -219,7 +225,7 @@ fun StepOneScreen(modifier: Modifier = Modifier, navController: NavController) {
 
 
 @Composable
-fun StepTwoScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun StepTwoScreen(modifier: Modifier = Modifier, navController: NavController, viewModel: GreetingsScreenViewModel) {
     var name by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
@@ -275,7 +281,10 @@ fun StepTwoScreen(modifier: Modifier = Modifier, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
-                    onClick = { navController.navigate(options[2]) }
+                    onClick = {
+                        viewModel.saveUserName(name)
+                        navController.navigate(options[2])
+                    }
                 ) {
                     Text("Применить")
                 }
@@ -299,7 +308,8 @@ fun StepThreeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     mainNavController: NavController,
-    stateToNavigate: String
+    stateToNavigate: String,
+    viewModel: GreetingsScreenViewModel
 ) {
     var surname by rememberSaveable { mutableStateOf("") }
 
@@ -357,6 +367,7 @@ fun StepThreeScreen(
                         .fillMaxWidth()
                         .padding(top = 32.dp),
                     onClick = { /* переход на главную при условии что поля заполнены */
+                        viewModel.saveUserSurname(surname)
                         mainNavController.navigate(stateToNavigate)
                     }
                 ) {

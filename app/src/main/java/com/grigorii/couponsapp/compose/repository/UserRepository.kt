@@ -1,33 +1,41 @@
 package com.grigorii.couponsapp.compose.repository
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.grigorii.couponsapp.compose.model.User
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class UserRepository {
+class UserRepository(context: Context) {
 
-    private val userName = "Григорий"
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
 
-    private val userSurname = "Алексеев"
+    companion object {
+        private const val KEY_USER_NAME = "user_name"
+        private const val KEY_USER_SURNAME = "user_surname"
+        private const val KEY_USER_TOWN = "user_town"
+    }
 
-    private val userTown = "Томск"
+    suspend fun saveUserInfo(user: User) {
+        withContext(Dispatchers.IO) {
+            sharedPreferences.edit() {
+                putString(KEY_USER_NAME, user.name)
+                putString(KEY_USER_SURNAME, user.surname)
+                putString(KEY_USER_TOWN, user.town)
+            }
+        }
+    }
 
 
     suspend fun loadUserInfo(): User {
-        delay(500)
-        return User(name = userName, surname = userSurname, town = userTown)
-    }
-
-
-    suspend fun loadUserName(): String {
-        return userName
-    }
-
-    suspend fun loadUserSurname(): String {
-        return userSurname
-    }
-
-    suspend fun loadUserTown(): String {
-        return userTown
+        return withContext(Dispatchers.IO) {
+            val name = sharedPreferences.getString(KEY_USER_NAME, "") ?: ""
+            val surname = sharedPreferences.getString(KEY_USER_SURNAME, "") ?: ""
+            val town = sharedPreferences.getString(KEY_USER_TOWN, "") ?: ""
+            User(name, surname, town)
+        }
     }
 
 }

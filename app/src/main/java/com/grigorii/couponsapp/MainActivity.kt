@@ -41,13 +41,15 @@ import com.grigorii.couponsapp.compose.screens.MainScreen
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
 import com.grigorii.couponsapp.compose.viewmodel.CouponDetailsViewModel
 import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
+import com.grigorii.couponsapp.compose.viewmodel.GreetingsScreenViewModel
 import com.grigorii.couponsapp.compose.viewmodel.MainScreenViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val mainScreenViewModel = MainScreenViewModel()
+    private val mainScreenViewModel by lazy { MainScreenViewModel(application = application) }
     private val catalogScreenViewModel = CatalogScreenViewModel()
     private val couponDetailsViewModel = CouponDetailsViewModel()
+    private val greetingsScreenViewModel by lazy { GreetingsScreenViewModel(application = application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +107,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Главная",
+                        startDestination = "GreetingsScreen",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {
@@ -142,7 +144,8 @@ class MainActivity : ComponentActivity() {
                             showBottomBarState.value = false
                             GreetingsScreen(
                                 mainNavController = navController,
-                                stateToNavigate = "Главная"
+                                stateToNavigate = "Главная",
+                                viewModel = greetingsScreenViewModel
                             )
                         }
                         composable("FilterScreen") {

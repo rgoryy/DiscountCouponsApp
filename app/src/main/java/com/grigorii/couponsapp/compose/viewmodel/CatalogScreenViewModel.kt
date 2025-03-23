@@ -16,7 +16,7 @@ class CatalogScreenViewModel(
     )
         private set
 
-    private var offerCouponsPage = 1
+    private var offerCouponsPage = 0
     private val offersPageSize = 2
 
     private val currentLoadedOfferCoupons = mutableListOf<CouponApi>()

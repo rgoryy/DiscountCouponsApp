@@ -1,5 +1,6 @@
 package com.grigorii.couponsapp.compose.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,10 +14,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainScreenViewModel(
-    couponContentUseCase: CouponContentUseCase = CouponContentUseCase()
+    couponContentUseCase: CouponContentUseCase = CouponContentUseCase(),
+    application: Application
 ) : AbstractCouponViewModel(couponContentUseCase) {
 
-    val userRepository = UserRepository() //todo добавить UseCase
+    val userRepository = UserRepository(
+        context = application.applicationContext
+    ) //todo добавить UseCase
 
     var userLoadingInfoState by mutableStateOf<UserLoadingState>(
         UserLoadingState.Loading
