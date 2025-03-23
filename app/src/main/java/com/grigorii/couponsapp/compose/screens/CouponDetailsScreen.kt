@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.grigorii.couponsapp.R
 import com.grigorii.couponsapp.compose.viewmodel.CouponDetailsViewModel
 import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState1
 
@@ -50,7 +51,7 @@ fun CouponDetailsScreen(
             CouponScreenSuccess(
                 couponDetails = CardItemContent(
                     title = coupon.title,
-                    painter = painterResource(coupon.imageResourceId),
+                    painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
                     imageDescription = coupon.imageDescription,
                     location = coupon.location,
                     price = coupon.price,

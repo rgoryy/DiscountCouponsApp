@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grigorii.couponsapp.R
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 import com.grigorii.couponsapp.compose.viewmodel.CatalogScreenViewModel
 import com.grigorii.couponsapp.compose.viewmodel.CouponLoadingState
 
@@ -77,7 +77,7 @@ fun CatalogScreen(
 fun CatalogScreenSuccess(
     modifier: Modifier = Modifier,
     navController: NavController,
-    offerCoupons: List<Coupon>,
+    offerCoupons: List<CouponApi>,
     onLoadMoreOfferCouponsButtonClick: () -> Unit,
 ) {
     var text by remember { mutableStateOf("") }
@@ -156,7 +156,7 @@ fun CatalogScreenSuccess(
                     val offerItemsContent = offerCoupons.map { coupon ->
                         CardItemContent(
                             title = coupon.title,
-                            painter = painterResource(id = coupon.imageResourceId),
+                            painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
                             imageDescription = coupon.imageDescription,
                             location = coupon.location,
                             price = coupon.price,

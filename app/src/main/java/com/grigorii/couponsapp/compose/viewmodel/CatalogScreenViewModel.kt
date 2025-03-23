@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.grigorii.couponsapp.compose.domain.CouponContentUseCase
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 
 
 class CatalogScreenViewModel(
@@ -19,7 +19,7 @@ class CatalogScreenViewModel(
     private var offerCouponsPage = 1
     private val offersPageSize = 2
 
-    private val currentLoadedOfferCoupons = mutableListOf<Coupon>()
+    private val currentLoadedOfferCoupons = mutableListOf<CouponApi>()
 
     fun fetchContent() {
         fetchOfferCoupons()

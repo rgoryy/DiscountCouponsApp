@@ -164,7 +164,7 @@ fun MainScreenSuccess(
                 val offerCouponsContent = offerCoupons?.map { coupon ->
                     CardItemContent(
                         title = coupon.title,
-                        painter = painterResource(id = coupon.imageResourceId),
+                        painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
                         imageDescription = coupon.imageDescription,
                         location = coupon.location,
                         price = coupon.price,
@@ -193,7 +193,7 @@ fun MainScreenSuccess(
                 val userCouponsContent = userCoupons?.map { coupon ->
                     CardItemContent(
                         title = coupon.title,
-                        painter = painterResource(id = coupon.imageResourceId),
+                        painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
                         imageDescription = coupon.imageDescription,
                         location = coupon.location,
                         price = coupon.price,

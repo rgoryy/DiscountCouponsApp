@@ -3,7 +3,7 @@ package com.grigorii.couponsapp.compose.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grigorii.couponsapp.compose.domain.CouponContentUseCase
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -12,10 +12,10 @@ abstract class AbstractCouponViewModel (
     protected val couponContentUseCase: CouponContentUseCase
 ) : ViewModel() {
     protected fun fetchCoupons(
-        loadCoupons: suspend (Int, Int) -> List<Coupon>,
+        loadCoupons: suspend (Int, Int) -> List<CouponApi>,
         page: Int,
         pageSize: Int,
-        currentLoadedCoupons: MutableList<Coupon>,
+        currentLoadedCoupons: MutableList<CouponApi>,
         updateState: (CouponLoadingState) -> Unit,
         errorMessage: String = "Ошибка загрузки данных"
     ): Int {

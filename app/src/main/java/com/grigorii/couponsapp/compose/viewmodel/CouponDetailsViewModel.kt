@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grigorii.couponsapp.compose.domain.CouponContentUseCase
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +40,6 @@ class CouponDetailsViewModel : ViewModel() {
 
 sealed class CouponLoadingState1 {
     data object Loading : CouponLoadingState1()
-    data class Success(val coupon: Coupon) : CouponLoadingState1()
+    data class Success(val coupon: CouponApi) : CouponLoadingState1()
     data class Error(val message: String) : CouponLoadingState1()
 }
