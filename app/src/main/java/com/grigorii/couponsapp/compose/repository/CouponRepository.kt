@@ -1,15 +1,14 @@
 package com.grigorii.couponsapp.compose.repository
 
-import com.grigorii.couponsapp.R
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 import kotlinx.coroutines.delay
 
 class CouponRepository {
     private val offerCoupons = listOf(
-        Coupon(
+        CouponApi(
             id = 1,
             title = "Консультации психолога",
-            imageResourceId = R.drawable.psycholog,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
@@ -23,36 +22,36 @@ class CouponRepository {
                     "шаг к лучшей версии себя!\u2028Получите скидочный купон на консультацию у " +
                     "профессионального психолога!"
         ),
-        Coupon(
+        CouponApi(
             id = 2,
             title = "Занятия по танцам",
-            imageResourceId = R.drawable.sportclub,
+            imageUrl = "f",
             imageDescription = "Занятия по танцам",
             location = "г.Томск",
             price = "2000 руб.",
             validityPeriod = "sss"
-        ),Coupon(
+        ),CouponApi(
             id = 3,
             title = "Курс “Разработка Android-приложений”",
-            imageResourceId = R.drawable.android,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 31.05.2025"
         ),
-        Coupon(
+        CouponApi(
             id = 4,
             title = "Курс по английскому языку",
-            imageResourceId = R.drawable.engl,
+            imageUrl = "f",
             imageDescription = "Курс по английскому языку",
             location = "г.Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 20.05.2025"
         ),
-        Coupon(
+        CouponApi(
             id = 5,
             title = "Онлайн-курс по фотографии",
-            imageResourceId = R.drawable.photo,
+            imageUrl = "f",
             imageDescription = "Онлайн-курс по фотографии",
             location = "г.Томск",
             price = "2000 руб.",
@@ -61,28 +60,28 @@ class CouponRepository {
     )
 
     private val userCoupons = listOf(
-        Coupon(
+        CouponApi(
             id = 6,
             title = "Курс “Разработка Android-приложений”",
-            imageResourceId = R.drawable.android,
+            imageUrl = "f",
             imageDescription = "Консультации психолога",
             location = "г. Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 31.05.2025"
         ),
-        Coupon(
+        CouponApi(
             id = 7,
             title = "Курс по английскому языку",
-            imageResourceId = R.drawable.engl,
+            imageUrl = "f",
             imageDescription = "Курс по английскому языку",
             location = "г.Томск",
             price = "2000 руб.",
             validityPeriod = "действителен до 20.05.2025"
         ),
-        Coupon(
+        CouponApi(
             id = 8,
             title = "Онлайн-курс по фотографии",
-            imageResourceId = R.drawable.photo,
+            imageUrl = "f",
             imageDescription = "Онлайн-курс по фотографии",
             location = "г.Томск",
             price = "2000 руб.",
@@ -92,29 +91,28 @@ class CouponRepository {
 
     private val allCoupons = offerCoupons + userCoupons
 
-    suspend fun loadOfferCoupons() : List<Coupon> {
+    suspend fun loadOfferCoupons() : List<CouponApi> {
         delay(5000)
         return offerCoupons
     }
 
-    suspend fun loadUserCoupons() : List<Coupon> {
+    suspend fun loadUserCoupons() : List<CouponApi> {
         delay(1000)
         return userCoupons
     }
 
-    suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<Coupon> {
+    suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<CouponApi> {
         delay(2000)
         //временное решение
-        return offerCoupons.drop((page - 1) * pageSize).take(pageSize)
+        return offerCoupons
     }
 
-    suspend fun loadUserCoupons(page: Int, pageSize: Int): List<Coupon> {
-        delay(1000)
+    suspend fun loadUserCoupons(page: Int, pageSize: Int): List<CouponApi> {
         //временное решение
-        return userCoupons.drop((page - 1) * pageSize).take(pageSize)
+        return userCoupons
     }
 
-    fun loadCouponById(id: Int): Coupon? {
+    fun loadCouponById(id: Int): CouponApi? {
         return allCoupons.find { it.id == id }
     }
 }

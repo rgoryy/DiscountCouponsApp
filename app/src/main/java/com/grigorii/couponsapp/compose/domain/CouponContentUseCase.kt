@@ -1,36 +1,31 @@
 package com.grigorii.couponsapp.compose.domain
 
-import com.grigorii.couponsapp.compose.model.Coupon
-import com.grigorii.couponsapp.compose.model.MainScreenContentData
+import com.grigorii.couponsapp.compose.model.CouponApi
+import com.grigorii.couponsapp.compose.repository.CouponApiRepository
 import com.grigorii.couponsapp.compose.repository.CouponRepository
 
 class CouponContentUseCase {
-    private val couponRepository = CouponRepository()
+    private val couponURepository = CouponRepository()
 
-    suspend fun loadContent(): MainScreenContentData {
-        val offerCoupons = couponRepository.loadOfferCoupons()
-        val userCoupons = couponRepository.loadUserCoupons()
+    private val couponRepository = CouponApiRepository()
 
-        return MainScreenContentData(offerCoupons, userCoupons)
-    }
+    /*suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<Coupon> {
+        return couponRepository.loadOfferCoupons(page, pageSize)
+    }*/
 
-    suspend fun loadOfferCoupons(): List<Coupon> {
-        return couponRepository.loadOfferCoupons()
-    }
-
-    suspend fun loadUsersCoupons() : List<Coupon> {
-        return couponRepository.loadUserCoupons()
-    }
-
-    suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<Coupon> {
+    suspend fun loadOfferCoupons(page: Int, pageSize: Int): List<CouponApi> {
         return couponRepository.loadOfferCoupons(page, pageSize)
     }
 
-    suspend fun loadUserCoupons(page: Int, pageSize: Int): List<Coupon> {
-        return couponRepository.loadUserCoupons(page, pageSize)
-    }
-
-    suspend fun loadCouponById(id: Int): Coupon? {
+    suspend fun loadCouponById(id: Int): CouponApi? {
         return couponRepository.loadCouponById(id)
     }
+
+    suspend fun loadUserCoupons(page: Int, pageSize: Int): List<CouponApi> {
+        return couponURepository.loadUserCoupons(page, pageSize)
+    }
+
+    /*suspend fun loadCouponById(id: Int): Coupon? {
+        return couponRepository.loadCouponById(id)
+    }*/
 }

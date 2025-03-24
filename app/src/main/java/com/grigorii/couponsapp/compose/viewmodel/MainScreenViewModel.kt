@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.grigorii.couponsapp.compose.domain.CouponContentUseCase
-import com.grigorii.couponsapp.compose.model.Coupon
+import com.grigorii.couponsapp.compose.model.CouponApi
 import com.grigorii.couponsapp.compose.model.User
 import com.grigorii.couponsapp.compose.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -34,14 +34,14 @@ class MainScreenViewModel(
         private set
 
 
-    private var offerCouponsPage = 1
-    private var userCouponsPage = 1
+    private var offerCouponsPage = 0
+    private var userCouponsPage = 0
 
     private val userPageSize = 3
     private val offersPageSize = 2
 
-    private val currentLoadedOfferCoupons = mutableListOf<Coupon>()
-    private val currentLoadedUserCoupons  = mutableListOf<Coupon>()
+    private val currentLoadedOfferCoupons = mutableListOf<CouponApi>()
+    private val currentLoadedUserCoupons  = mutableListOf<CouponApi>()
 
     fun fetchContent() {
         fetchUserInfo()

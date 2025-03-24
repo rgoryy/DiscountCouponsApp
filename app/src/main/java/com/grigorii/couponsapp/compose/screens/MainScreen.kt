@@ -100,7 +100,8 @@ fun MainScreen(
                 ),
                 onLoadMoreOfferCouponsButtonClick = { },
                 onLoadMoreUserCouponsButtonClick = { },
-                userInfo = userInfo
+                userInfo = userInfo,
+                viewModel = viewModel
             )
 
         offerCouponsState is CouponLoadingState.Error -> {
@@ -123,6 +124,7 @@ fun MainScreen(
                 navController,
                 MainScreenContentData(
                     offerCoupons = offerCoupons,
+
                     userCoupons = userCoupons
                 ),
                 onLoadMoreOfferCouponsButtonClick = {
@@ -131,7 +133,8 @@ fun MainScreen(
                 onLoadMoreUserCouponsButtonClick = {
                     TODO("")
                 },
-                userInfo = userInfo
+                userInfo = userInfo,
+                viewModel = viewModel
             )
         }
     }
@@ -142,6 +145,7 @@ fun MainScreenSuccess(
     navController: NavController,
     contentData: MainScreenContentData,
     userInfo: User,
+    viewModel: MainScreenViewModel,
     onLoadMoreOfferCouponsButtonClick: () -> Unit,
     onLoadMoreUserCouponsButtonClick: () -> Unit,
 ) {
@@ -162,16 +166,7 @@ fun MainScreenSuccess(
         item {
             if (contentData.offerCoupons?.isNotEmpty() == true) {
                 val offerCouponsContent = offerCoupons?.map { coupon ->
-                    CardItemContent(
-                        title = coupon.title,
-                        painter = painterResource(id = coupon.imageResourceId),
-                        imageDescription = coupon.imageDescription,
-                        location = coupon.location,
-                        price = coupon.price,
-                        validityPeriod = coupon.validityPeriod,
-                        id = coupon.id,
-                        description = coupon.description
-                    )
+                    viewModel.mapCouponToCardItemContent(coupon = coupon)
                 }
                 OfferCouponsSection(
                     offerCouponsContent,
@@ -193,7 +188,7 @@ fun MainScreenSuccess(
                 val userCouponsContent = userCoupons?.map { coupon ->
                     CardItemContent(
                         title = coupon.title,
-                        painter = painterResource(id = coupon.imageResourceId),
+                        painter = painterResource(id = R.drawable.android/*coupon.imageResourceId*/),
                         imageDescription = coupon.imageDescription,
                         location = coupon.location,
                         price = coupon.price,
