@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.grigorii.couponsapp.compose.CouponsTheme
+import com.grigorii.couponsapp.compose.repository.UserRepository
 import com.grigorii.couponsapp.compose.screens.CatalogScreen
 import com.grigorii.couponsapp.compose.screens.CouponDetailsScreen
 import com.grigorii.couponsapp.compose.screens.FavoritesScreen
@@ -51,9 +52,17 @@ class MainActivity : ComponentActivity() {
     private val couponDetailsViewModel = CouponDetailsViewModel()
     private val greetingsScreenViewModel by lazy { GreetingsScreenViewModel(application = application) }
 
+    private val userRepository by lazy { UserRepository(applicationContext) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val isFirstLaunch = userRepository.isFirstLaunch()
+
+        if (isFirstLaunch) {
+            userRepository.setFirstLaunch()
+        }
 
         setContent {
             CouponsTheme {
@@ -107,7 +116,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "GreetingsScreen",
+                        startDestination = if (isFirstLaunch) "GreetingsScreen" else "Главная",
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("Главная") {

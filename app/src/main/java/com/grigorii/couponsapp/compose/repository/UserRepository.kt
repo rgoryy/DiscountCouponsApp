@@ -18,9 +18,19 @@ class UserRepository(context: Context) {
         private const val KEY_USER_TOWN = "user_town"
     }
 
+    fun isFirstLaunch(): Boolean {
+        return sharedPreferences.getBoolean("is_first_launch", true)
+    }
+
+    fun setFirstLaunch() {
+        sharedPreferences.edit {
+            putBoolean("is_first_launch", false)
+        }
+    }
+
     suspend fun saveUserInfo(user: User) {
         withContext(Dispatchers.IO) {
-            sharedPreferences.edit() {
+            sharedPreferences.edit {
                 putString(KEY_USER_NAME, user.name)
                 putString(KEY_USER_SURNAME, user.surname)
                 putString(KEY_USER_TOWN, user.town)
